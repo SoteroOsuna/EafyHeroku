@@ -1,0 +1,12 @@
+header {
+    background-color: rgb(198, 193, 255);
+}
+
+footer {
+    background-color: black;
+}
+
+.micontenedor{
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
