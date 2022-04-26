@@ -13,6 +13,9 @@ function Header() {
                         <li className="nav-item">
                             <Link to="/registro" class="nav-link">Registro</Link>
                         </li>
+                        <li className="nav-item">
+                            <Link to="/dashboard" class="nav-link">Dashboard</Link>
+                        </li>
                     </ul>
                 </header>
             </div>

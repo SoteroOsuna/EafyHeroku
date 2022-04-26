@@ -34,6 +34,8 @@ function Registro() {
             contraseña: input.contraseña
         }
 
+        
+
         // pasar datos a servidor o bd.
         axios.post("/registrar", nUsuario);
 
