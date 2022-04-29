@@ -1,16 +1,16 @@
 import React, {useState} from "react";
 import axios from "axios";
-const bcrypt = require('bcryptjs');
+import  { Redirect } from 'react-router-dom'
+const Swal = require('sweetalert2');
 
-function Registro() {
-    
+function Login(){
+
     // declaración objeto inicial
     const[input, setInput] = useState ({
-        nombre: "",
         email: "",
         contraseña: ""
     });
-    
+
     // cambiar el valor por el que escribe el usuario
     function handleChange(event){
         const {name, value} = event.target;
@@ -23,51 +23,58 @@ function Registro() {
         });
     }
 
+    async function validateUsuario(nUsuario){
+        const result = await axios.post("/login", nUsuario);
+        const status = result.status
+        console.log(status);
+
+        if (status===200){
+            Swal.fire(
+                'Login exitoso!',
+                'success'
+            )
+            
+        }
+        if (status===201){
+            Swal.fire({
+                icon: 'error',
+                title: 'ERROR:',
+                text: 'Usuario no encontrado!'
+            })
+        }
+        if (status===202){
+            Swal.fire({
+                icon: 'error',
+                title: 'ERROR:',
+                text: 'Contraseña incorrecta!'
+            })
+        }
+        
+    }
+
     // se activa cuando se oprime el botón
     function handleClick(event){
         // evita el parpadeo predefinido
         event.preventDefault();
-        input.contraseña = bcrypt.hashSync(input.contraseña, 10);
-
-        // crear objeto para pasar a servidor
+        
         const nUsuario = {
-            nombre: input.nombre,
             email: input.email,
             contraseña: input.contraseña
         }
 
+        validateUsuario(nUsuario)
         
-
-        // pasar datos a servidor o bd.
-        axios.post("/registrar", nUsuario);
-
     }
 
-
-
-
-
+    
+    
     return (
         <div className="container micontenedor">
-            <h1>Registro</h1>
-            <p>A continuación, puedes registrarte aquí!</p>
+            <h1>Login</h1>
+            <p>A continuación, puedes iniciar sesión aquí!</p>
 
             <main class="form-signin">
                 <form>
-
-
-                    <div class="form-floating">
-                        <input
-                            onChange={handleChange}
-                            name="nombre"
-                            value={input.name}
-                            type="text"
-                            class="form-control"
-                            id="floatingInput"
-                            placeholder="name@example.com"/>
-                        <label for="floatingInput">Nombre</label>
-                    </div>
-
                     <div class="form-floating">
                         <input
                             onChange={handleChange}
@@ -77,6 +84,7 @@ function Registro() {
                             class="form-control"
                             id="floatingInput"
                             placeholder="name@example.com"/>
+                            
                         <label for="floatingInput">Email address</label>
                     </div>
                     <div class="form-floating mb-3">
@@ -91,13 +99,15 @@ function Registro() {
                         <label for="floatingPassword">Password</label>
                     </div>
 
-                    <button onClick={handleClick} class="w-100 btn btn-lg btn-primary" type="submit">Registrar</button>
+                    <button onClick={handleClick} class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
                     <p class="mt-5 mb-3 text-muted">&copy; 2022 Eafy Solutions</p>
                 </form>
             </main>
 
         </div>
     );
+
+
 }
 
-export default Registro;
+export default Login;
