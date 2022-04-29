@@ -14,6 +14,17 @@ function Dashboard(){
         productCode: ""
     });
 
+    var balance = 0;
+    const calcularBalance = () => {
+        axios.get('/recibirMovimientos').then(resp => {
+            const datos = resp.data;
+            balance = datos.map(obj => obj.cantidad).reduce((acc, amount) => acc + amount);
+            console.log(balance);
+            document.getElementById('textoBalance').innerText = balance;
+
+        });
+    };
+
     const readExcel = (file) => {
         const promise = new Promise((resolve, reject) => {
             const fileReader = new FileReader();
@@ -48,44 +59,65 @@ function Dashboard(){
     return(
         <div className="container micontenedor">
                 <h1>Dashboard</h1>
-                {/*
-                {fileName && (
-                    <p>
-                        Seleccionaste: <span>{fileName}</span>
-                    </p>
-                )}
-                <input type="file" onChange={(event)=>{
-                    const file = event.target.files[0];
-                    readExcel(file);
-                }}/>
-
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Item</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { items.map((d) => (
-                            <tr key={d.Item}>
-                                <th>{d.Item}</th>
-                                <td>{d.Description}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                */}
-                <form action="/subirExcel" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="excel">BrowseFile</label>
-                        <input type="file" class="form-control" name="excel" required></input>
-                        <br></br><br></br>
-                        <input type="submit" value="submit"></input>
+                <div class="container">
+                    <div class="row justify-content-around">
+                        <div class="col">
+                            <div class="row align-items-center">
+                                <h1 class="text-center"> Registro de Archivos</h1>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-auto">
+                                    <form action="/subirExcel" method="POST" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <label for="excel">BrowseFile</label>
+                                            <input type="file" class="form-control" name="excel" required></input>
+                                            <br></br><br></br>
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-auto">
+                                                    <input class="btn btn-dark btn-lg" type="submit" value="Subir Excel"></input>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row justify-content-center">
+                                <div class="col-md-auto">
+                                    <a href="#myModal" class="btn btn-dark btn-lg" data-bs-toggle="modal" role="button" onClick={calcularBalance}>Generar Reporte 1</a>
+                                </div>
+                                <div id="myModal" class="modal fade">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <p class="modal-title">Tu Balance es:</p>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h5 class="modal-title" id="textoBalance">$+{balance}</h5>
+                                                <p class="text-secondary"><small>Si existe algun error favor de comunicarse con soporte tecnico</small></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-auto">
+                                    <button class="btn btn-dark btn-lg">Generar Reporte 2</button>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-auto">
+                                    <button class="btn btn-dark btn-lg">Generar Reporte 3</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </form>
-                
+                </div>        
         </div>
     );
 }

@@ -36,9 +36,17 @@ const excelSchema = new mongoose.Schema ({
     ProductCode: String
 });
 
+const movimientosUsuarioSchema = new mongoose.Schema ({
+    fecha: String,
+    cuenta: String,
+    asunto: String,
+    cantidad: Number
+});
+
 // 2. crear el modelo
 const Usuario = new mongoose.model("Usuario", usuarioSchema);
 var excelModel = new mongoose.model("Excel", excelSchema);
+var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
 app.post("/registrar", function (req, res){
@@ -59,6 +67,7 @@ app.post("/registrar", function (req, res){
     usuarioBaseDatos.save();
 });
 
+
 app.post("/subirExcel", upload.single('excel'), (req, res) => {
     var workbook = XLSX.read(req.file.buffer);
     var sheet_namelist = workbook.SheetNames;
@@ -74,7 +83,52 @@ app.post("/subirExcel", upload.single('excel'), (req, res) => {
         })
         x++;
     });
-    res.redirect('/');
+    res.redirect('/dashboard');
+});
+
+
+/*
+app.post("/subirExcel", upload.single('excel'), uploadMovimientos);
+function uploadMovimientos(req, res) {    
+    var workbook = XLSX.read(req.file.buffer);
+    var sheet_name_list = workbook.SheetNames;
+    var data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    var account = "";
+    var output = "";
+    var count = 0;
+    for (let line of data) {
+        if (Object.keys(line).length >= 4 && line["CONTPAQ i"] !== undefined && line["__EMPTY"] !== "") {
+            if (String(line["CONTPAQ i"]).match(/\d{3}-\d{3}/)) {
+                account = line["CONTPAQ i"];
+            } else {
+                if (Object.keys(line).length >= 6 && line["CONTPAQ i"] !== "Fecha") {
+                    output += "REGISTRO " + (++count) + "-----------------------------\n";
+                    output += "CUENTA: " + account + "\n";  
+                    output += "FECHA: " + line["CONTPAQ i"] + "\n";  
+                    output += "TIPO: " + line["__EMPTY"] + "\n";  
+                    output += "NUMERO: " + line["__EMPTY_1"] + "\n";
+                    output += "CONCEPTO: " + line["Lecar Consultoria en TI, S.C."] + "\n";
+                    output += "REFERENCIA: " + line["__EMPTY_2"] + "\n";
+                    output += "CARGOS: " + line["__EMPTY_3"] + "\n";
+                    output += "ABONOS: " + line["__EMPTY_4"] + "\n";
+                    output += "SALDO: " + line["Hoja:      1"] + "\n";  
+                }
+            }
+        }
+    }
+    console.log(output);
+
+    return res.status(201).send(output);
+}
+*/
+
+//Método get para movimientos
+app.get("/recibirMovimientos", (req, res) => {
+    movimientosModel.find().then( (result) => {
+        res.send(result);
+    }).catch( (err) => {
+        console.log(err);
+    })
 });
 
 //////// 2 fragmentos necesarios para implementar heroku
