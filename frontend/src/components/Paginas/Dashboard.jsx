@@ -95,7 +95,7 @@ function Dashboard(){
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <h5 class="modal-title" id="textoBalance">$+{balance}</h5>
+                                                <h5 class="modal-title" id="textoBalance">{balance}</h5>
                                                 <p class="text-secondary"><small>Si existe algun error favor de comunicarse con soporte tecnico</small></p>
                                             </div>
                                             <div class="modal-footer">
@@ -105,9 +105,11 @@ function Dashboard(){
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="row justify-content-center">
                                 <div class="col-md-auto">
                                     <button class="btn btn-dark btn-lg">Generar Reporte 2</button>
+                                    
                                 </div>
                             </div>
                             <div class="row justify-content-center">

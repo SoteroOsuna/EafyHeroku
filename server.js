@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const XLSX = require('xlsx');
 const cors = require("cors");
+const bcrypt = require('bcryptjs');
 
 const app = express();
 app.use(express.json());
@@ -30,10 +31,10 @@ const usuarioSchema = {
 };
 
 const excelSchema = new mongoose.Schema ({
-    Item: Number,
-    Description: String,
-    UM: String,
-    ProductCode: String
+    Cuenta: Number,
+    Nombre: String,
+    Concepto: String,
+    Tipo: String
 });
 
 const movimientosUsuarioSchema = new mongoose.Schema ({
@@ -84,6 +85,34 @@ app.post("/subirExcel", upload.single('excel'), (req, res) => {
         x++;
     });
     res.redirect('/dashboard');
+});
+
+// Método para validar credenciales de Login
+app.post("/login", async (req, res) => {
+    const {email, contraseña} = req.body
+    const user = await Usuario.findOne({email})
+
+    if(!user){
+        res.status(201)
+        res.send({ error: 'Usuario no encontrado' })
+        return 
+    }
+
+    const checkPassword = await bcrypt.compare(contraseña, user.contraseña)
+
+    if (checkPassword){
+        res.status(200)
+        res.send('Login exitoso')
+        return
+    }
+
+    if(!checkPassword){
+        res.status(202)
+        res.send({
+            error: 'Contraseña Invalida'
+        })
+        return
+    }
 });
 
 /*
