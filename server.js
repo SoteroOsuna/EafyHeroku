@@ -130,6 +130,21 @@ app.get("/recibirMovimientos", (req, res) => {
     })
 });
 
+//Método get para consulta de user
+
+app.post("/Consulta", async (req, res) => {
+    const user = await Usuario.findOne({
+        email: req.body.email
+    })
+    if(user){
+        return true
+    }else{
+        return false
+    }
+    
+})
+
+
 //////// 2 fragmentos necesarios para implementar heroku
 
 // usar estáticos cuando esta en modo produccion //

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import axios from "axios";
-
+import Swal from 'sweetalert2'
 function Registro() {
     
     // declaración objeto inicial
@@ -34,10 +34,32 @@ function Registro() {
             contraseña: input.contraseña
         }
 
-        
+        if ((nUsuario.nombre !== "") && (nUsuario.email !== "") && (nUsuario.contraseña !== "")){
 
+            const aux = axios.post("/Consulta", nUsuario);
+                if (aux == false){
+                    axios.post("/registrar", nUsuario);
+                    Swal.fire('Te haz registrado correctamente!')
+                }else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Este email ya esta en uso',
+                        icon: 'error',
+                        confirmButtonText: 'OK!'
+                      })
+                }   
+
+        }else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Ningun dato debe estar vacio!',
+                icon: 'error',
+                confirmButtonText: 'OK!'
+              })
+        }
+        
         // pasar datos a servidor o bd.
-        axios.post("/registrar", nUsuario);
+        
 
     }
 
