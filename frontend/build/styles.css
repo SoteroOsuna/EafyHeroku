@@ -10,3 +10,11 @@ footer {
     padding-top: 50px;
     padding-bottom: 50px;
 }
+
+.row{
+    min-height: 10rem;
+}
+[class^=col]{
+    padding: 50px 15px;
+    background: #fbefcf;
+}

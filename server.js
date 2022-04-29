@@ -18,11 +18,20 @@ mongoose.connect(`mongodb+srv://DBAdmin:${key}@clustermiapp.jwlpc.mongodb.net/Ea
 const usuarioSchema = {
     nombre: String,
     email: String,
-    contraseña: String
+    contraseña: String,
+    reportesGenerados: Number
 };
+
+const movimientosUsuarioSchema = new mongoose.Schema ({
+    fecha: String,
+    cuenta: String,
+    asunto: String,
+    cantidad: Number
+});
 
 // 2. crear el modelo
 const Usuario = new mongoose.model("Usuario", usuarioSchema);
+var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
 app.post("/registrar", function (req, res){
@@ -35,12 +44,25 @@ app.post("/registrar", function (req, res){
     const usuarioBaseDatos = new Usuario ({
         nombre: usuarioFormulario,
         email: emailFormulario,
-        contraseña: contraseñaFormulario
+        contraseña: contraseñaFormulario,
+        reportesGenerados: 0
     });
 
     //4. subir a la base de datos o guardar.
     usuarioBaseDatos.save();
+
 });
+
+
+//Método get para movimientos
+app.get("/recibirMovimientos", (req, res) => {
+    movimientosModel.find().then( (result) => {
+        res.send(result);
+    }).catch( (err) => {
+        console.log(err);
+    })
+});
+
 
 //////// 2 fragmentos necesarios para implementar heroku
 
@@ -65,3 +87,4 @@ if(process.env.NODE_ENV === 'production') {
 app.listen(port, function(){
     console.log("servidor de express funcionado");
 })
+
