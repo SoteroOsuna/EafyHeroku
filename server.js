@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const bcrypt = require('bcryptjs')
 
 const app = express();
 app.use(express.json());
@@ -24,7 +25,7 @@ const usuarioSchema = {
 // 2. crear el modelo
 const Usuario = new mongoose.model("Usuario", usuarioSchema);
 
-//Método post
+//Método POST
 app.post("/registrar", function (req, res){
     // guardar variables
     const usuarioFormulario = req.body.nombre;
@@ -42,6 +43,34 @@ app.post("/registrar", function (req, res){
     usuarioBaseDatos.save();
 });
 
+// Método para validar credenciales de Login
+app.post("/login", async (req, res) => {
+    const {email, contraseña} = req.body
+    const user = await Usuario.findOne({email})
+
+    if(!user){
+        res.status(201)
+        res.send({ error: 'Usuario no encontrado' })
+        return 
+    }
+
+    const checkPassword = await bcrypt.compare(contraseña, user.contraseña)
+
+    if (checkPassword){
+        res.status(200)
+        res.send('Login exitoso')
+        return
+    }
+
+    if(!checkPassword){
+        res.status(202)
+        res.send({
+            error: 'Contraseña Invalida'
+        })
+        return
+    }
+});
+
 //////// 2 fragmentos necesarios para implementar heroku
 
 // usar estáticos cuando esta en modo produccion //
@@ -56,7 +85,7 @@ if(process.env.NODE_ENV === 'production') {
     // cambio de puerto en heroku
     let port = process.env.PORT;
     if (port == null || port == "") {
-    port = 5000;
+    port = 3200;
     }
 ////////// 2 fragmentos necesarios para implementar heroku
 

@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import axios from "axios";
+const bcrypt = require('bcryptjs');
 
 function Registro() {
     
@@ -27,6 +28,8 @@ function Registro() {
         // evita el parpadeo predefinido
         event.preventDefault();
 
+        input.contraseña = bcrypt.hashSync(input.contraseña, 10);
+
         // crear objeto para pasar a servidor
         const nUsuario = {
             nombre: input.nombre,
@@ -34,11 +37,9 @@ function Registro() {
             contraseña: input.contraseña
         }
 
-        
-
         // pasar datos a servidor o bd.
         axios.post("/registrar", nUsuario);
-
+        
     }
 
 
@@ -52,8 +53,6 @@ function Registro() {
 
             <main class="form-signin">
                 <form>
-
-
                     <div class="form-floating">
                         <input
                             onChange={handleChange}

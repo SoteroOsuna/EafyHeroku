@@ -5,11 +5,13 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Paginas/Home";
 import Registro from "./Paginas/Registro";
 import Dashboard from "./Paginas/Dashboard";
+import Login from "./Paginas/Login";
 
 function Direccionamiento(){
     return (
         <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
