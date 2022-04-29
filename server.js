@@ -36,9 +36,17 @@ const excelSchema = new mongoose.Schema ({
     ProductCode: String
 });
 
+const movimientosUsuarioSchema = new mongoose.Schema ({
+    fecha: String,
+    cuenta: String,
+    asunto: String,
+    cantidad: Number
+});
+
 // 2. crear el modelo
 const Usuario = new mongoose.model("Usuario", usuarioSchema);
 var excelModel = new mongoose.model("Excel", excelSchema);
+var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
 app.post("/registrar", function (req, res){
@@ -59,7 +67,7 @@ app.post("/registrar", function (req, res){
     usuarioBaseDatos.save();
 });
 
-/*
+
 app.post("/subirExcel", upload.single('excel'), (req, res) => {
     var workbook = XLSX.read(req.file.buffer);
     var sheet_namelist = workbook.SheetNames;
@@ -75,10 +83,11 @@ app.post("/subirExcel", upload.single('excel'), (req, res) => {
         })
         x++;
     });
-    res.redirect('/');
+    res.redirect('/dashboard');
 });
-*/
 
+
+/*
 app.post("/subirExcel", upload.single('excel'), uploadMovimientos);
 function uploadMovimientos(req, res) {    
     var workbook = XLSX.read(req.file.buffer);
@@ -111,6 +120,16 @@ function uploadMovimientos(req, res) {
 
     return res.status(201).send(output);
 }
+*/
+
+//Método get para movimientos
+app.get("/recibirMovimientos", (req, res) => {
+    movimientosModel.find().then( (result) => {
+        res.send(result);
+    }).catch( (err) => {
+        console.log(err);
+    })
+});
 
 //////// 2 fragmentos necesarios para implementar heroku
 
