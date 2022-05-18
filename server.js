@@ -30,11 +30,28 @@ const usuarioSchema = {
     reportesGenerados: Number
 };
 
-const excelSchema = new mongoose.Schema ({
-    Cuenta: Number,
-    Nombre: String,
+const movimientos_Schema = new mongoose.Schema ({
+    Registro: Number,
+    Cuenta: String,
+    Fecha: String,
+    Tipo: String,
+    Numero: Number,
     Concepto: String,
-    Tipo: String
+    Referencia: String,
+    Cargos: Number,
+    Abonos: Number,
+    Saldo: Number
+});
+
+const catalogo_Schema = new mongoose.Schema ({
+    Nivel: Number,
+    Codigo: Number,
+    Nombre: String,
+    Tipo: String,
+    Fin: String,
+    Moneda: String,
+    NIF: Number,
+    SAT: Number
 });
 
 const movimientosUsuarioSchema = new mongoose.Schema ({
@@ -46,7 +63,8 @@ const movimientosUsuarioSchema = new mongoose.Schema ({
 
 // 2. crear el modelo
 const Usuario = new mongoose.model("Usuario", usuarioSchema);
-var excelModel = new mongoose.model("Excel", excelSchema);
+var mov_Model = new mongoose.model("excel_mov_Aux", movimientos_Schema, "excel_mov_Aux");
+var catalogo_Model = new mongoose.model("excel_catalogo", catalogo_Schema, "excel_catalogo");
 var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
@@ -68,24 +86,6 @@ app.post("/registrar", function (req, res){
     usuarioBaseDatos.save();
 });
 
-
-app.post("/subirExcel", upload.single('excel'), (req, res) => {
-    var workbook = XLSX.read(req.file.buffer);
-    var sheet_namelist = workbook.SheetNames;
-    var x=0;
-    sheet_namelist.forEach(element => {
-        var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_namelist[x]]);
-        excelModel.insertMany(xlData, (err,data) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(data);
-            }
-        })
-        x++;
-    });
-    res.redirect('/dashboard');
-});
 
 // Método para validar credenciales de Login
 app.post("/login", async (req, res) => {
@@ -115,14 +115,14 @@ app.post("/login", async (req, res) => {
     }
 });
 
-/*
-app.post("/subirExcel", upload.single('excel'), uploadMovimientos);
+
+app.post("/subirMovimientos", upload.single('excel'), uploadMovimientos);
 function uploadMovimientos(req, res) {    
     var workbook = XLSX.read(req.file.buffer);
     var sheet_name_list = workbook.SheetNames;
     var data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
     var account = "";
-    var output = "";
+    var fail = false;
     var count = 0;
     for (let line of data) {
         if (Object.keys(line).length >= 4 && line["CONTPAQ i"] !== undefined && line["__EMPTY"] !== "") {
@@ -130,25 +130,82 @@ function uploadMovimientos(req, res) {
                 account = line["CONTPAQ i"];
             } else {
                 if (Object.keys(line).length >= 6 && line["CONTPAQ i"] !== "Fecha") {
-                    output += "REGISTRO " + (++count) + "-----------------------------\n";
-                    output += "CUENTA: " + account + "\n";  
-                    output += "FECHA: " + line["CONTPAQ i"] + "\n";  
-                    output += "TIPO: " + line["__EMPTY"] + "\n";  
-                    output += "NUMERO: " + line["__EMPTY_1"] + "\n";
-                    output += "CONCEPTO: " + line["Lecar Consultoria en TI, S.C."] + "\n";
-                    output += "REFERENCIA: " + line["__EMPTY_2"] + "\n";
-                    output += "CARGOS: " + line["__EMPTY_3"] + "\n";
-                    output += "ABONOS: " + line["__EMPTY_4"] + "\n";
-                    output += "SALDO: " + line["Hoja:      1"] + "\n";  
+                    
+                    var VREGISTRO = ++count;
+                    var VCUENTA = account;
+                    var VFECHA = line["CONTPAQ i"];
+                    var VTIPO = line["__EMPTY"];
+                    var VNUMERO = line["__EMPTY_1"];
+                    var VCONCEPTO = line["Lecar Consultoria en TI, S.C."];
+                    var VREFERENCIA = line["__EMPTY_2"];
+                    var VCARGOS = line["__EMPTY_3"];
+                    var VABONOS = line["__EMPTY_4"];
+                    var VSALDO = line["Hoja:      1"];
+
+                    var excelBaseDatos = new mov_Model ({
+                        Registro:   VREGISTRO,
+                        Cuenta:     VCUENTA,
+                        Fecha:      VFECHA,
+                        Tipo:       VTIPO,
+                        Numero:     VNUMERO,
+                        Concepto:   VCONCEPTO,
+                        Referencia: VREFERENCIA,
+                        Cargos:     VCARGOS,
+                        Abonos:     VABONOS,
+                        Saldo:      VSALDO
+                    });
+
+                    excelBaseDatos.save( (err,data) => {
+                        if (err) {
+                            console.log("Error at line " + line + " : " + err);
+                            fail = true;
+                        } 
+                    });
                 }
             }
         }
     }
-    console.log(output);
-
-    return res.status(201).send(output);
+    if (fail != true) {
+        console.log("Excel subido a la DB con exito :)")
+    }
+    res.redirect('/dashboard');
 }
-*/
+
+app.post("/subirCatalogo", upload.single('excel'), uploadCatalogo);
+function uploadCatalogo(req, res) {    
+    var workbook = XLSX.read(req.file.buffer);
+    var sheet_name_list = workbook.SheetNames;
+    var data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    var account = "";
+    var fail = false;
+    var count = 0;
+    for (let line of data) {
+        if (Object.keys(line).length >= 2 && line["CONTPAQ i"] !== undefined && line["__EMPTY"] !== "") {
+            if (String(line["CONTPAQ i"]).match(/\d{1}/)) {
+                account = line["CONTPAQ i"];
+                //console.log("Encontré esto: " + line["CONTPAQ i"]);
+            } else {
+                if (line["CONTPAQ i"] == "Total de cuentas:") {
+                    var Total = line["__EMPTY_1"];
+                    console.log("Total: " + Total)
+                }
+                if (line["CONTPAQ i"] == "Cuentas de acumulación:") {
+                    var Acumulacion = line["__EMPTY_1"];
+                    console.log("Acumulación: " + Acumulacion)
+                }
+                if (line["CONTPAQ i"] == "Cuentas de afectación:") {
+                    var Afectacion = line["__EMPTY_1"];
+                    console.log("Afectación: " + Afectacion)
+                }
+            }
+        }
+    }
+    if (fail != true) {
+        console.log("Excel subido a la DB con exito :)")
+    }
+    res.redirect('/dashboard');
+}
+
 
 //Método get para movimientos
 app.get("/recibirMovimientos", (req, res) => {
@@ -158,7 +215,6 @@ app.get("/recibirMovimientos", (req, res) => {
         console.log(err);
     })
 });
-
 //////// 2 fragmentos necesarios para implementar heroku
 
 // usar estáticos cuando esta en modo produccion //

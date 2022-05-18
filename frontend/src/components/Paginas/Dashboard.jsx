@@ -64,23 +64,38 @@ function Dashboard(){
                         <div class="col">
                             <div class="row align-items-center">
                                 <h1 class="text-center"> Registro de Archivos</h1>
+                            {/*}
                             </div>
                             <div class="row justify-content-center">
+                            */}
                                 <div class="col-md-auto">
-                                    <form action="/subirExcel" method="POST" enctype="multipart/form-data">
+                                    <form action="/subirMovimientos" method="POST" enctype="multipart/form-data">
                                         <div class="form-group">
-                                            <label for="excel">BrowseFile</label>
+                                            <label for="excel">Movimientos Auxiliares del Catálogo</label>
                                             <input type="file" class="form-control" name="excel" required></input>
-                                            <br></br><br></br>
                                             <div class="row justify-content-center">
                                                 <div class="col-md-auto">
-                                                    <input class="btn btn-dark btn-lg" type="submit" value="Subir Excel"></input>
+                                                    <input class="btn btn-dark btn-lg" type="submit" value="Subir Excel (Movimientos Auxiliares del Catálogo)"></input>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
+
+                                    <form action="/subirCatalogo" method="POST" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <label for="excel">Catálogo de Cuentas</label>
+                                            <input type="file" class="form-control" name="excel" required></input>
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-auto">
+                                                    <input class="btn btn-dark btn-lg" type="submit" value="Subir Excel (Movimientos Auxiliares del Catálogo)"></input>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
                                 </div>
                             </div>
+
                         </div>
                         <div class="col">
                             <div class="row justify-content-center">
