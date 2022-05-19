@@ -5,6 +5,8 @@ const multer = require("multer");
 const XLSX = require('xlsx');
 const cors = require("cors");
 const bcrypt = require('bcryptjs');
+const Swal = require('sweetalert2');
+const moment = require('moment');
 
 const app = express();
 app.use(express.json());
@@ -40,18 +42,20 @@ const movimientos_Schema = new mongoose.Schema ({
     Referencia: String,
     Cargos: Number,
     Abonos: Number,
-    Saldo: Number
+    Saldo: Number,
+    FechaSubida: String
 });
 
 const catalogo_Schema = new mongoose.Schema ({
     Nivel: Number,
-    Codigo: Number,
+    Codigo: String,
     Nombre: String,
     Tipo: String,
     Fin: String,
     Moneda: String,
     NIF: Number,
-    SAT: Number
+    SAT: Number,
+    FechaSubida: String
 });
 
 const movimientosUsuarioSchema = new mongoose.Schema ({
@@ -141,21 +145,25 @@ function uploadMovimientos(req, res) {
                     var VCARGOS = line["__EMPTY_3"];
                     var VABONOS = line["__EMPTY_4"];
                     var VSALDO = line["Hoja:      1"];
+                    var now = new Date();
+                    moment.locale('es')
+                    var VFECHA_SUBIDA = moment(now).format('LL, h:mm a');
 
-                    var excelBaseDatos = new mov_Model ({
-                        Registro:   VREGISTRO,
-                        Cuenta:     VCUENTA,
-                        Fecha:      VFECHA,
-                        Tipo:       VTIPO,
-                        Numero:     VNUMERO,
-                        Concepto:   VCONCEPTO,
-                        Referencia: VREFERENCIA,
-                        Cargos:     VCARGOS,
-                        Abonos:     VABONOS,
-                        Saldo:      VSALDO
+                    var movBaseDatos = new mov_Model ({
+                        Registro:       VREGISTRO,
+                        Cuenta:         VCUENTA,
+                        Fecha:          VFECHA,
+                        Tipo:           VTIPO,
+                        Numero:         VNUMERO,
+                        Concepto:       VCONCEPTO,
+                        Referencia:     VREFERENCIA,
+                        Cargos:         VCARGOS,
+                        Abonos:         VABONOS,
+                        Saldo:          VSALDO,
+                        FechaSubida:    VFECHA_SUBIDA
                     });
 
-                    excelBaseDatos.save( (err,data) => {
+                    movBaseDatos.save( (err,data) => {
                         if (err) {
                             console.log("Error at line " + line + " : " + err);
                             fail = true;
@@ -166,7 +174,17 @@ function uploadMovimientos(req, res) {
         }
     }
     if (fail != true) {
+        Swal.fire(
+            'Excel subido a la DB con exito :)',
+            'success'
+        )
         console.log("Excel subido a la DB con exito :)")
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'ERROR:',
+            text: 'No se pudo subir a la DB el excel'
+        })
     }
     res.redirect('/dashboard');
 }
@@ -176,15 +194,54 @@ function uploadCatalogo(req, res) {
     var workbook = XLSX.read(req.file.buffer);
     var sheet_name_list = workbook.SheetNames;
     var data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-    var account = "";
+    
     var fail = false;
-    var count = 0;
+    
     for (let line of data) {
-        if (Object.keys(line).length >= 2 && line["CONTPAQ i"] !== undefined && line["__EMPTY"] !== "") {
+        if (Object.keys(line).length >= 4 && line["CONTPAQ i"] !== undefined && line["__EMPTY"] !== "") {
             if (String(line["CONTPAQ i"]).match(/\d{1}/)) {
-                account = line["CONTPAQ i"];
-                //console.log("Encontré esto: " + line["CONTPAQ i"]);
-            } else {
+                
+                var VNIVEL = line["CONTPAQ i"];
+                var VCODIGO = line["__EMPTY"];
+                var VNOMBRE = line["__EMPTY_1"];
+                var VTIPO = line["__EMPTY_2"];
+                    if (line["__EMPTY_3"] === " ") var VAFECTABLE = null;
+                    else VAFECTABLE = line["__EMPTY_3"];
+                // var VCONCEPTO = line["Lecar Consultoria en TI, S.C."];
+                    if (line["__EMPTY_4"] === " ") var VEDO_FIN = null;
+                    else VEDO_FIN = line["__EMPTY_4"];
+                var VMONEDA = line["__EMPTY_5"];
+                // var VSEGNEG = line["__EMPTY_6"];
+                    if (line["__EMPTY_7"] === undefined) var VNIF = null;
+                    else VNIF = line["__EMPTY_7"];
+            
+                    if (line["Hoja:      1"] === undefined) var VSAT = null;
+                    else VSAT = line["Hoja:      1"];
+                var now = new Date();
+                moment.locale('es')
+                var VFECHA_SUBIDA = moment(now).format('LL, h:mm a');
+                
+                var CatalogoBaseDatos = new catalogo_Model ({
+                    Nivel: VNIVEL,
+                    Codigo: VCODIGO,
+                    Nombre: VNOMBRE,
+                    Tipo: VTIPO,
+                    Fin: VEDO_FIN,
+                    Moneda: VMONEDA,
+                    NIF: VNIF,
+                    SAT: VSAT,
+                    FechaSubida: VFECHA_SUBIDA
+                });
+
+                CatalogoBaseDatos.save( (err,data) => {
+                    if (err) {
+                        console.log("Error at line " + line + " : " + err);
+                        fail = true;
+                    } 
+                });
+
+            } /* 
+            else {
                 if (line["CONTPAQ i"] == "Total de cuentas:") {
                     var Total = line["__EMPTY_1"];
                     console.log("Total: " + Total)
@@ -197,7 +254,8 @@ function uploadCatalogo(req, res) {
                     var Afectacion = line["__EMPTY_1"];
                     console.log("Afectación: " + Afectacion)
                 }
-            }
+            } 
+            */
         }
     }
     if (fail != true) {

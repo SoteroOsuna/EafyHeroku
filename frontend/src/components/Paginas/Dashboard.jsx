@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
-import * as XLSX from 'xlsx';
 import axios from "axios";
 
 function Dashboard(){
-    const [items, setItems] = useState([]);
-    // To display selected fileName
-    const [fileName, setFileName] = useState(null);
-
-    const[input, setInput] = useState ({
-        item: "",
-        description: "",
-        um: "",
-        productCode: ""
-    });
 
     var balance = 0;
     const calcularBalance = () => {
@@ -24,37 +13,6 @@ function Dashboard(){
 
         });
     };
-
-    const readExcel = (file) => {
-        const promise = new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(file)
-
-            fileReader.onload = (event) => {
-                const bufferArray = event.target.result;
-                
-                // To display selected fileName
-                setFileName(file.name);
-                
-                const workbook = XLSX.read(bufferArray, {type:'buffer'});
-                const wsname = workbook.SheetNames[0];
-
-                const worksheet = workbook.Sheets[wsname];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
- 
-                resolve(jsonData);
-            };
-
-            fileReader.onerror = (error) => {
-                reject(error);
-            };
-        });
-
-        promise.then((d) => {
-            console.log(d);
-            setItems(d);
-        });
-    }
 
     return(
         <div className="container micontenedor">
@@ -87,7 +45,7 @@ function Dashboard(){
                                             <input type="file" class="form-control" name="excel" required></input>
                                             <div class="row justify-content-center">
                                                 <div class="col-md-auto">
-                                                    <input class="btn btn-dark btn-lg" type="submit" value="Subir Excel (Movimientos Auxiliares del Catálogo)"></input>
+                                                    <input class="btn btn-dark btn-lg" type="submit" value="Subir Excel (Catálogo de Cuentas)"></input>
                                                 </div>
                                             </div>
                                         </div>
