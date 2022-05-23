@@ -1,0 +1,14 @@
+name: Docker Image Eafy App
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run Docker Compose
+    - run: docker compose up
