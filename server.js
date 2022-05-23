@@ -16,7 +16,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 const key = 'inshotmongodb';
 // conectar atlas
 mongoose.connect(`mongodb+srv://DBAdmin:${key}@clustermiapp.jwlpc.mongodb.net/EafyAppDB`, {useNewUrlParser: true});
-
 // multer
 var storage = multer.memoryStorage();
 
