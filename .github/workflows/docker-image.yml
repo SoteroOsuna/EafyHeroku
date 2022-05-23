@@ -14,9 +14,9 @@ jobs:
       env: 
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKERPW: ${{ secrets.DOCKERPW }}
-      run: docker login -u $DOCKER_USER -p DOCKERPW
+      run: docker login -u $DOCKER_USER -p $DOCKERPW
     - name: Run Docker Compose
       run: docker compose up
     - name: Docker Push
-      run: docker push gmowilliams/eafy_solutions:image
+      run: docker push gmowilliams/eafy_solutions:1.0.0
       
