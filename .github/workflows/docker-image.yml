@@ -11,4 +11,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Run Docker Compose
-    - run: docker compose up
+      run: docker compose up
