@@ -14,7 +14,7 @@ jobs:
       env: 
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKERPW: ${{ secrets.DOCKERPW }}
-      run: docker login -u $DOCKER_USER -p $DOCKERPW
+      run: echo "${{ secrets.DOCKERPW }}" | docker login -u "gmowilliams" --password-stdin
     - name: Run Docker Compose
       run: docker compose up
     - name: Docker Push
