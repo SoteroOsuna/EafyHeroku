@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
 const Swal = require('sweetalert2');
 const moment = require('moment');
 const { path } = require("express/lib/application");
-require('dotenv').config({path:__dirname+'/environmental_variables/.env'})
+require('dotenv').config({path:__dirname+'/.env'})
 const catalogo_Model = require("./backend/models/catalogo_Schema")
 
 const app = express();
