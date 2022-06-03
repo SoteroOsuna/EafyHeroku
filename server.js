@@ -43,7 +43,11 @@ const movimientos_Schema = new mongoose.Schema ({
     Cargos: Number,
     Abonos: Number,
     Saldo: Number,
-    FechaSubida: String
+    FechaSubida: String,
+    Total_Cargos: Number,
+    Total_Abonos: Number,
+    Total_Saldo: Number,
+    Categoria_Total: String
 });
 
 const catalogo_Schema = new mongoose.Schema ({
@@ -69,7 +73,7 @@ const movimientosUsuarioSchema = new mongoose.Schema ({
 const Usuario = new mongoose.model("Usuario", usuarioSchema);
 var mov_Model = new mongoose.model("excel_mov_Aux", movimientos_Schema, "excel_mov_Aux");
 var catalogo_Model = new mongoose.model("excel_catalogo", catalogo_Schema, "excel_catalogo");
-var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
+//var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
 app.post("/registrar", function (req, res){
@@ -267,7 +271,7 @@ function uploadCatalogo(req, res) {
 
 //Método get para movimientos
 app.get("/recibirMovimientos", (req, res) => {
-    movimientosModel.find().then( (result) => {
+    mov_Model.find().then( (result) => {
         res.send(result);
     }).catch( (err) => {
         console.log(err);
@@ -287,7 +291,7 @@ if(process.env.NODE_ENV === 'production') {
     // cambio de puerto en heroku
     let port = process.env.PORT;
     if (port == null || port == "") {
-    port = 5000;
+    port = 3001;
     }
 ////////// 2 fragmentos necesarios para implementar heroku
 

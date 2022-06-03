@@ -4,6 +4,7 @@
 /node_modules/
 /frontend/node_modules/
 /frontend/node_modules/.cache/.eslintcache
+/frontend/package-lock.json
 /.pnp
 .pnp.js
 
@@ -23,3 +24,5 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+node_modules
+
