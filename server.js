@@ -5,11 +5,11 @@ const multer = require("multer");
 const XLSX = require('xlsx');
 const cors = require("cors");
 const bcrypt = require('bcryptjs');
-const Swal = require('sweetalert2');
 const moment = require('moment');
 const { path } = require("express/lib/application");
 require('dotenv').config({path:__dirname+'/.env'})
 const catalogo_Model = require("./backend/models/catalogo_Schema")
+const mov_Model = require("./backend/models/movimientos_Schema")
 
 const app = express();
 app.use(express.json());
@@ -37,42 +37,6 @@ const usuarioSchema = {
     reportesGenerados: Number
 };
 
-const movimientos_Schema = new mongoose.Schema ({
-    Submission_id: Number,
-    Registro: Number,
-    Cuenta: String,
-    Fecha: String,
-    Tipo: String,
-    Numero: Number,
-    Concepto: String,
-    Referencia: String,
-    Cargos: Number,
-    Abonos: Number,
-    Saldo: Number,
-    Total: Number,
-    Total_Cargos: Number,
-    Total_Abonos: Number,
-    Total_Saldo: Number,
-    Categoria_Total: String,
-    TotalContable_Cargos: Number,
-    TotalContable_Abonos: Number,
-    FechaSubida: String
-});
-/*
-const catalogo_Schema = new mongoose.Schema ({
-    Submission_id: Number,
-    Nivel: Number,
-    Codigo: String,
-    Nombre: String,
-    Tipo: String,
-    Fin: String,
-    Moneda: String,
-    NIF: Number,
-    SAT: Number,
-    FechaSubida: String
-});
-*/
-
 const movimientosUsuarioSchema = new mongoose.Schema ({
     fecha: String,
     cuenta: String,
@@ -81,10 +45,7 @@ const movimientosUsuarioSchema = new mongoose.Schema ({
 });
 
 // 2. crear el modelo
-const nombre_Usuario = "Testing";
 const Usuario = new mongoose.model("Usuario", usuarioSchema);
-var mov_Model = new mongoose.model(`excel_mov_Aux_${nombre_Usuario}`, movimientos_Schema, `excel_mov_Aux_${nombre_Usuario}`);
-//var catalogo_Model = new mongoose.model(`excel_catalogo_${nombre_Usuario}`, catalogo_Schema, `excel_catalogo_${nombre_Usuario}`);
 var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
