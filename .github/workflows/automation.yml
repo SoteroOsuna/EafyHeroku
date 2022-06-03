@@ -1,0 +1,11 @@
+name: Build and release Eafy App
+on: push
+jobs:
+  build-project:
+    name: Build Eafy App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+      run: actions/checkout@v2
+      - name: Docker Compose Up
+      run: docker compose up
