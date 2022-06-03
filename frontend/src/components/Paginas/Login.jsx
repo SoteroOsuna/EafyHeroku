@@ -25,6 +25,7 @@ function Login(){
 
     async function validateUsuario(nUsuario){
         const result = await axios.post("/login", nUsuario);
+        console.log(result);
         const status = result.status
         console.log(status);
 
@@ -73,34 +74,36 @@ function Login(){
             <h1>Login</h1>
             <p>A continuación, puedes iniciar sesión aquí!</p>
 
-            <main class="form-signin">
+            <main className="form-signin">
                 <form>
-                    <div class="form-floating">
+                    <div className="form-floating">
                         <input
                             onChange={handleChange}
                             name="email"
                             value={input.email}
                             type="email"
-                            class="form-control"
+                            className="form-control"
                             id="floatingInput"
-                            placeholder="name@example.com"/>
+                            placeholder="name@example.com"
+                            required />
                             
                         <label for="floatingInput">Email address</label>
                     </div>
-                    <div class="form-floating mb-3">
+                    <div className="form-floating mb-3">
                         <input
                             onChange={handleChange}
                             name="contraseña"
                             value={input.contraseña}
                             type="password"
-                            class="form-control"
+                            className="form-control"
                             id="floatingPassword"
-                            placeholder="Password"/>
+                            placeholder="Password"
+                            required />
                         <label for="floatingPassword">Password</label>
                     </div>
 
-                    <button onClick={handleClick} class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
-                    <p class="mt-5 mb-3 text-muted">&copy; 2022 Eafy Solutions</p>
+                    <button onClick={handleClick} className="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+                    <p className="mt-5 mb-3 text-muted">&copy; 2022 Eafy Solutions</p>
                 </form>
             </main>
 
