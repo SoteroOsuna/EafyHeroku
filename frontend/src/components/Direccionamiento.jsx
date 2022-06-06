@@ -6,6 +6,7 @@ import Home from "./Paginas/Home";
 import Registro from "./Paginas/Registro";
 import Dashboard from "./Paginas/Dashboard";
 import Login from "./Paginas/Login";
+import RequireAuth from "./RequireAuth";
 
 function Direccionamiento(){
     return (
@@ -14,6 +15,11 @@ function Direccionamiento(){
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            {/*
+            <Route element={<RequireAuth />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+            */}
         </Routes>
     );   
 }

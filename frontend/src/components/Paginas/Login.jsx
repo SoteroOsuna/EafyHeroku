@@ -1,9 +1,13 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import  { Redirect } from 'react-router-dom'
+import AuthContext from "../AuthProvider";
 const Swal = require('sweetalert2');
 
+
 function Login(){
+    const { setAuth } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     // declaración objeto inicial
     const[input, setInput] = useState ({
@@ -24,33 +28,44 @@ function Login(){
     }
 
     async function validateUsuario(nUsuario){
+        try{
         const result = await axios.post("/login", nUsuario);
-        console.log(result);
-        const status = result.status
-        console.log(status);
-
-        if (status===200){
-            Swal.fire(
-                'Login exitoso!',
-                'success'
-            )
-            
+        console.log(JSON.stringify(result));
+        const email = result?.data?.email;
+        const accessToken = result?.data?.accessToken;
+        setAuth({ email, accessToken });
+        navigate('/dashboard');
         }
-        if (status===201){
-            Swal.fire({
-                icon: 'error',
-                title: 'ERROR:',
-                text: 'Usuario no encontrado!'
-            })
+        catch(err){
+            if (!err?.response){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ERROR:',
+                    text: 'Sin respuesta del servidor'
+                })
+            }
+            else if (err.response?.status===404){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ERROR:',
+                    text: 'El correo introducido no ha sido registrado'
+                })
+            }
+            else if (err.response?.status===401){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ERROR:',
+                    text: 'Contraseña incorrecta'
+                })
+            }
+            else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ERROR:',
+                    text: 'Ocurrio un error inesperado'
+                })
+            }
         }
-        if (status===202){
-            Swal.fire({
-                icon: 'error',
-                title: 'ERROR:',
-                text: 'Contraseña incorrecta!'
-            })
-        }
-        
     }
 
     // se activa cuando se oprime el botón
@@ -58,6 +73,15 @@ function Login(){
         // evita el parpadeo predefinido
         event.preventDefault();
         
+        if (input.email === "" || input.contraseña === ""){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia:',
+                text: 'Complete ambos campos para continuar'
+            })
+            return;
+        }
+
         const nUsuario = {
             email: input.email,
             contraseña: input.contraseña

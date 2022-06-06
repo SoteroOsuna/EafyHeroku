@@ -10,6 +10,9 @@ const { path } = require("express/lib/application");
 require('dotenv').config({path:__dirname+'/.env'})
 const catalogo_Model = require("./backend/models/catalogo_Schema")
 const mov_Model = require("./backend/models/movimientos_Schema")
+const jwt = require("jsonwebtoken");
+
+const verifyJWT = require("./backend/middlewares/verifyJWT")
 
 const app = express();
 app.use(express.json());
@@ -49,22 +52,42 @@ const Usuario = new mongoose.model("Usuario", usuarioSchema);
 var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
-app.post("/registrar", function (req, res){
-    // guardar variables
-    const usuarioFormulario = req.body.nombre;
-    const emailFormulario = req.body.email;
-    const contraseñaFormulario = req.body.contraseña;
+app.post("/login", async (req, res) => {
+    const {email, contraseña} = req.body
+    const user = await Usuario.findOne({email})
 
-    // 3. Crear documento
-    const usuarioBaseDatos = new Usuario ({
-        nombre: usuarioFormulario,
-        email: emailFormulario,
-        contraseña: contraseñaFormulario,
-        reportesGenerados: 0
-    });
+    if(!user){
+        res.status(404)
+        res.send({ error: 'Usuario no encontrado' })
+        return 
+    }
 
-    //4. subir a la base de datos o guardar.
-    usuarioBaseDatos.save();
+    const checkPassword = await bcrypt.compare(contraseña, user.contraseña)
+
+    if (checkPassword){
+        
+        const accessToken = jwt.sign(
+            { "usuario": user.email }, 
+            process.env.ACCESS_TOKEN_SECRET, 
+            {expiresIn: '30s'}
+        );
+        const refreshToken = jwt.sign(
+            { "usuario": user.email }, 
+            process.env.REFRESH_TOKEN_SECRET, 
+            {expiresIn: '1d'}
+        );
+        res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: 24*60*60*1000});
+        res.status(200).json({ email, accessToken });
+        return
+    }
+
+    if(!checkPassword){
+        res.status(401)
+        res.send({
+            error: 'Contraseña Invalida'
+        })
+        return
+    }
 });
 
 
@@ -376,7 +399,113 @@ async function uploadCatalogo(req, res) {
 
 //Método get para movimientos
 app.get("/recibirMovimientos", (req, res) => {
-    movimientosModel.find().then( (result) => {
+    mov_Model.find().then( (result) => {
+        res.send(result);
+    }).catch( (err) => {
+        console.log(err);
+    })
+});
+
+//Método get para movimientos
+app.get("/recibir_FechasDe_Movimientos/:id/:id2", (req, res) => {
+    var dict = new Object();
+
+    var dict = {
+        "ene": 1, "feb": 2, "mar": 3, "abr": 4, "may": 5, "jun": 6,
+        "jul": 7, "ago": 8, "sep": 9, "oct": 10, "nov": 11, "dic": 12
+    }
+
+    var mes1 = req.params.id;
+    var mes2 = req.params.id2;
+
+    if (mes1 != mes2) {
+        // We can either convert a string to JSON
+        var string_query = '{ "$or": [';
+        // Or construct a JSON dynamically
+        var dQuery = { $or: [] };
+
+    } else {
+        var string_query = '{ "Fecha" : { "$regex" :  ' + '"' + mes1 + '", ' + '"$options" : "i" }}';
+        var dQuery = { Fecha : { '$regex' :  mes1, '$options' : 'i' }  };
+        var quer = JSON.parse(string_query);
+    }
+
+    console.log("mes1: ", mes1);
+    console.log("mes2: ", mes2);
+    
+    if (dict[mes1] < dict[mes2]) {
+        var range = (dict[mes2] - dict[mes1]) + 1;
+        console.log("range: ", range);
+
+        var start = dict[mes1];
+        var end = dict[mes2];
+        
+        for (i=start; i<=end; i++) {
+            console.log("Month: ", Object.keys(dict).find(key => dict[key] === i));
+            month_i = Object.keys(dict).find(key => dict[key] === i)
+            // Building string 
+            // *IMPORTANT: Use '' for start-end, and "" for parameters
+            // String must not contain final commas, we use a conditional
+            if (i == range) {
+                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }}';
+            } else {
+                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }},';
+            }
+
+            // Building a JSON
+            dQuery["$or"].push( {Fecha : { '$regex' :  month_i, '$options' : 'i' }}, );
+        }
+
+    } else if (dict[mes1] > dict[mes2] ) {
+        var range = (12 - dict[mes1]) + dict[mes2] + 1;
+        console.log("range: ", range);
+
+        var start = dict[mes1];
+        var end = dict[mes2];
+        
+        for (i=1; i<=range; i++) {
+            if (start == 13) start = 1 
+            console.log("Month: ", Object.keys(dict).find(key => dict[key] === start));
+            month_i = Object.keys(dict).find(key => dict[key] === start)
+            start++;
+            // Building string 
+            // *IMPORTANT: Use '' for start-end, and "" for parameters
+            // String must not contain final commas, we use a conditional
+            if (i == range) {
+                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }}';
+            } else {
+                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }},';
+            }
+
+            // Building a JSON
+            dQuery["$or"].push( {Fecha : { '$regex' :  month_i, '$options' : 'i' }}, );
+        }
+    }
+
+    // Final piece for string
+    if (mes1 != mes2) string_query += ' ]} '
+    console.log(string_query);
+    var quer = JSON.parse(string_query);
+    
+    /*
+    // To manage keys in json -> dict[key]
+    
+    if (dict.hasOwnProperty(mes1)) {
+        console.log("dict[mes]: ",dict[mes1]);
+    };
+    
+    // To manage values within the json -> Object.keys(dict).find(key => dict[key] === 'desired value')
+
+    const mes_key = Object.keys(dict).find(key => dict[key] === 6);
+    console.log("mes_key: ",mes_key);
+    
+    */
+
+    // Both methods work
+    console.log("dQuery: ", dQuery);
+    console.log("quer", quer);
+
+    mov_Model.find( dQuery ).then( (result) => {
         res.send(result);
     }).catch( (err) => {
         console.log(err);
