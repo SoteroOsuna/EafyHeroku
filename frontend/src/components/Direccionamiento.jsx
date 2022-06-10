@@ -14,12 +14,9 @@ function Direccionamiento(){
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            {/*
             <Route element={<RequireAuth />}>
                 <Route path="/dashboard" element={<Dashboard />} />
             </Route>
-            */}
         </Routes>
     );   
 }

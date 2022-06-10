@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import axios from "axios";
+import { fillErr, serverErr, existUserErr, unknownErr, successRegister } from "../alerts"
 const bcrypt = require('bcryptjs');
 
 function Registro() {
-    
     // declaración objeto inicial
     const[input, setInput] = useState ({
         nombre: "",
@@ -24,23 +24,33 @@ function Registro() {
     }
 
     // se activa cuando se oprime el botón
-    function handleClick(event){
+    async function handleClick(event){
         // evita el parpadeo predefinido
         event.preventDefault();
-        input.contraseña = bcrypt.hashSync(input.contraseña, 10);
-
-        // crear objeto para pasar a servidor
-        const nUsuario = {
-            nombre: input.nombre,
-            email: input.email,
-            contraseña: input.contraseña
+        if (input.nombre==="" || input.email==="" || input.contraseña===""){
+            fillErr();
+            return;
         }
+        try{
+            const contraseña = await bcrypt.hashSync(input.contraseña, 10);
 
-        
+            // crear objeto para pasar a servidor
+            const nUsuario = {
+                nombre: input.nombre,
+                email: input.email,
+                contraseña: contraseña
+            }
 
-        // pasar datos a servidor o bd.
-        axios.post("/registrar", nUsuario);
+            // pasar datos a servidor o bd.
+            const result = await axios.post("/registrar", nUsuario); 
+            console.log(JSON.stringify(result));
+            successRegister();
 
+        } catch(err){
+            if (err?.response?.status===422) existUserErr();
+            else if (!err?.response) serverErr();
+            else unknownErr();
+        }
     }
 
 
@@ -84,7 +94,7 @@ function Registro() {
                             onChange={handleChange}
                             name="contraseña"
                             value={input.contraseña}
-                            type="password"
+                            /*type="password"*/
                             className="form-control"
                             id="floatingPassword"
                             placeholder="Password"/>

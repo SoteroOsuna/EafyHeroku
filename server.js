@@ -52,6 +52,23 @@ const Usuario = new mongoose.model("Usuario", usuarioSchema);
 var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
+app.post("/registrar", async function (req, res){
+        const {nombre, email, contraseña} = req.body
+        const userExists = await Usuario.findOne({email});
+        if (userExists) return res.status(422).json({ error: "Usuario ya existe." });
+        // 3. Crear documento
+        const usuarioBaseDatos = new Usuario ({
+            nombre: nombre,
+            email: email,
+            contraseña: contraseña,
+            reportesGenerados: 0
+        });
+        //4. subir a la base de datos o guardar.
+        await usuarioBaseDatos.save();
+        return res.status(200).json({OK: "Registro exitoso."})
+});
+
+//Método post
 app.post("/login", async (req, res) => {
     const {email, contraseña} = req.body
     const user = await Usuario.findOne({email})
@@ -90,34 +107,6 @@ app.post("/login", async (req, res) => {
     }
 });
 
-
-// Método para validar credenciales de Login
-app.post("/login", async (req, res) => {
-    const {email, contraseña} = req.body
-    const user = await Usuario.findOne({email})
-
-    if(!user){
-        res.status(201)
-        res.send({ error: 'Usuario no encontrado' })
-        return 
-    }
-
-    const checkPassword = await bcrypt.compare(contraseña, user.contraseña)
-
-    if (checkPassword){
-        res.status(200)
-        res.send('Login exitoso')
-        return
-    }
-
-    if(!checkPassword){
-        res.status(202)
-        res.send({
-            error: 'Contraseña Invalida'
-        })
-        return
-    }
-});
 
 app.get("/validateMovimientosTEST", validateMovimientosTEST);
 async function validateMovimientosTEST(req, res) {

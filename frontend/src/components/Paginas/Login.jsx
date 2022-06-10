@@ -2,7 +2,7 @@ import React, {useState, useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AuthContext from "../AuthProvider";
-const Swal = require('sweetalert2');
+import { fillErr, serverErr, passErr, noUserErr, unknownErr } from "../alerts";
 
 
 function Login(){
@@ -37,34 +37,10 @@ function Login(){
         navigate('/dashboard');
         }
         catch(err){
-            if (!err?.response){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ERROR:',
-                    text: 'Sin respuesta del servidor'
-                })
-            }
-            else if (err.response?.status===404){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ERROR:',
-                    text: 'El correo introducido no ha sido registrado'
-                })
-            }
-            else if (err.response?.status===401){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ERROR:',
-                    text: 'Contraseña incorrecta'
-                })
-            }
-            else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ERROR:',
-                    text: 'Ocurrio un error inesperado'
-                })
-            }
+            if (!err?.response) serverErr();
+            else if (err.response?.status===404) noUserErr();
+            else if (err.response?.status===401) passErr();
+            else unknownErr();
         }
     }
 
@@ -74,11 +50,7 @@ function Login(){
         event.preventDefault();
         
         if (input.email === "" || input.contraseña === ""){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Advertencia:',
-                text: 'Complete ambos campos para continuar'
-            })
+            fillErr();
             return;
         }
 
