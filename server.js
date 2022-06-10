@@ -382,6 +382,15 @@ app.get("/recibirMovimientos", (req, res) => {
         console.log(err);
     })
 });
+
+//Método get para cuetas
+app.get("/recibirCuentas", (req, res) => {
+    catalogo_Model.find().then ( (result) => {
+        res.send(result);
+    }).catch( (err) => {
+        console.log(err);
+    })
+});
 //////// 2 fragmentos necesarios para implementar heroku
 
 // usar estáticos cuando esta en modo produccion //
