@@ -2,6 +2,15 @@ import React, { useEffect, useState } from "react";
 import Select from 'react-select';
 import axios from "axios";
 import swal from 'sweetalert';
+import {Table} from 'reactstrap';
+import Pdf from "react-to-pdf";
+//import { jsPDF } from "jspdf";
+import jsPDF from 'jspdf'
+
+
+const reference1 = React.createRef();
+const reference2 = React.createRef();
+const reference3 = React.createRef();
 
 const Swal = require('sweetalert2');
 
@@ -384,8 +393,30 @@ function Dashboard(){
         });        
     };
 
+    function generatePDF() {
+ 
+        var doc = new jsPDF();
+   
+        document.getElementById("reference1").removeAttribute('hidden')
+        document.getElementById("result2").removeAttribute('hidden')
+   
+        doc.fromHTML(document.getElementById("reference1"),5,5)
+        doc.fromHTML(document.getElementById("result2"),5,45)
+   
+        document.getElementById("reference1").setAttribute('hidden', 'true')
+        document.getElementById("result2").setAttribute('hidden', 'true')
+   
+        doc.save("output.pdf")
+    }
+
     return(
+        
+        
+        
         <div className="container micontenedor">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script src="https://parall.ax/parallax/js/jspdf.js"></script>
+
                 <h1>Dashboard</h1>
                 <div className="container">
                     <div className="row justify-content-around">
@@ -453,225 +484,277 @@ function Dashboard(){
                                   
                                     {/* <a href="#myModal" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button" onClick={() => generarReporteBG()} >Generar Balance General</a> */}
                                     <a href="#myModal" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button" onClick={() => buscarFechasBG()} >Generar Balance General</a>
+
+                                    
+                                    <div className="modal-footer">
+                                        <Pdf targetRef={reference1} filename="R1.pdf">
+                                            {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Descargar PDF TABLES</button>}
+                                        </Pdf>
+                                    </div>
+
+                                    {/*
+                                    <div className="modal-footer">
+                                        <Pdf targetRef={reference2} filename="R2.pdf">
+                                            {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Descargar PDF "Estado de Resultados"</button>}
+                                        </Pdf>
+                                    </div>
+
+                                    <div className="modal-footer">
+                                        <Pdf targetRef={reference3} filename="R3.pdf">
+                                            {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Descargar PDF "Balance de Comprobación"</button>}
+                                        </Pdf>
+                                    </div>
+                                    */}
+
+                                    <div className="modal-footer">
+                                        <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General"</button>
+                                    </div>
+
+                                    <div className="modal-footer">
+                                        <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 2"</button>
+                                    </div>
+
+                                    <div className="modal-footer">
+                                        <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 3"</button>
+                                    </div>
+
+                                
+                                    <div id="result" hidden style={{color: "red" }}>
+                                        <h1>Hello World</h1>
+                                    </div>
+                                    <div id="result2" hidden style={{color: "red" }}>
+                                        <h1>Hello World</h1>
+                                    </div>
+                                        
+    
+
+
                                 </div>
                                 {/*
                                 Modalidad generada al presionar el boton
                                 */}
-                                <div id="myModal" className="modal fade">
-                                    <div className="modal-dialog modal-xl" role="document">
-                                        <div className="modal-content">
-                                            <div className="modal-header">
-                                                <h5 className="modal-title" id="exampleModalLongTitle">Balance General</h5>
-                                                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div className="modal-body">
-                                                <h1> Empresa 1</h1>
-                                                <section className ="flex-container">
-                                                    
-                                                    <div className="activos">
-                                                        <h1 className="titulo-seccion"> Activos </h1>
-                                                        <h2 className="subtitulo-seccion"> CIRCULANTE</h2>
-                                                        <table id="tabla-activos-circulante">
-                                                            
-                                                        </table>
-                                                        <h2 className="subtitulo-seccion"> FIJO</h2>
-                                                        <table id="tabla-activos-fijo">
-                                                            
-                                                        </table>
-                                                        <h2 className="subtitulo-seccion"> DIFERIDO</h2>
-                                                        <table id="tabla-activos-diferido">
-                                                           
-                                                        </table>
-                                                        
-                                                    </div>
-                                                    <div className="pasivos-capital">
-                                                        <div className="pasivos">
-                                                            <h1 className="titulo-seccion"> Pasivos</h1>
-                                                            <h2 className="subtitulo-seccion">CIRCULANTE</h2>
-                                                            <table id="tabla-pasivos-circulante">
-                                                                
-                                                            </table>
-                                                            <h2 className="subtitulo-seccion"> FIJO</h2>
-                                                            <table id="tabla-pasivos-fijo">
-                                                                
-                                                            </table>
-                                                            <h2 className="subtitulo-seccion"> DIFERIDO</h2>
-                                                            <table id="tabla-pasivos-diferido">
-                                                                
-                                                            </table>
-                                                            <table id="tabla-suma-pasivos">
 
-                                                            </table>
-                                                        </div>
-                                                        <div className="capital">
-                                                            <h1 className="titulo-seccion">Capital</h1>
-                                                            <h2 className="subtitulo-seccion"> CAPITAL </h2>
-                                                            <table id="tabla-capital">
-                                                               
-                                                            </table>
+                                <div id="reference1" ref={reference1} >
+                                    <div id="myModal" >
+                                        <div className="modal-dialog modal-xl" role="document">
+                                            <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title" id="exampleModalLongTitle">Balance General</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <h1> Empresa 1</h1>
+                                                        <section className ="flex-container">
+                                                            
+                                                            <div className="activos">
+                                                                <h1 className="titulo-seccion"> Activos </h1>
+                                                                <h2 className="subtitulo-seccion"> CIRCULANTE</h2>
+                                                                <table id="tabla-activos-circulante">
+                                                                    
+                                                                </table>
+                                                                <h2 className="subtitulo-seccion"> FIJO</h2>
+                                                                <table id="tabla-activos-fijo">
+                                                                    
+                                                                </table>
+                                                                <h2 className="subtitulo-seccion"> DIFERIDO</h2>
+                                                                <table id="tabla-activos-diferido">
+                                                                
+                                                                </table>
+                                                                
+                                                            </div>
+                                                            <div className="pasivos-capital">
+                                                                <div className="pasivos">
+                                                                    <h1 className="titulo-seccion"> Pasivos</h1>
+                                                                    <h2 className="subtitulo-seccion">CIRCULANTE</h2>
+                                                                    <table id="tabla-pasivos-circulante">
+                                                                        
+                                                                    </table>
+                                                                    <h2 className="subtitulo-seccion"> FIJO</h2>
+                                                                    <table id="tabla-pasivos-fijo">
+                                                                        
+                                                                    </table>
+                                                                    <h2 className="subtitulo-seccion"> DIFERIDO</h2>
+                                                                    <table id="tabla-pasivos-diferido">
+                                                                        
+                                                                    </table>
+                                                                    <table id="tabla-suma-pasivos">
 
-                                                            <tabla id="tabla-suma-capital">
+                                                                    </table>
+                                                                </div>
+                                                                <div className="capital">
+                                                                    <h1 className="titulo-seccion">Capital</h1>
+                                                                    <h2 className="subtitulo-seccion"> CAPITAL </h2>
+                                                                    <table id="tabla-capital">
+                                                                    
+                                                                    </table>
 
-                                                            </tabla>
+                                                                    <tabla id="tabla-suma-capital">
+
+                                                                    </tabla>
+                                                                    
                                                             
-                                                    
-                                                        </div>
+                                                                </div>
+                                                            </div>
+                                                        </section>
+                                                        <section className="flex-container">
+                                                            <div className="sumas">
+                                                                <table id="tabla-suma-activos">
+                                                                    
+                                                                </table>
+                                                            </div>
+                                                            <div className="sumas">
+                                                                <table id="tabla-suma-pc">
+                                                                    
+                                                                </table>
+                                                            </div>
+                                                        </section>
                                                     </div>
-                                                </section>
-                                                <section className="flex-container">
-                                                    <div className="sumas">
-                                                        <table id="tabla-suma-activos">
-                                                            
-                                                        </table>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-primary" data-bs-dismiss="modal">OK</button>
                                                     </div>
-                                                    <div className="sumas">
-                                                        <table id="tabla-suma-pc">
-                                                            
-                                                        </table>
-                                                    </div>
-                                                </section>
-                                            </div>
-                                            <div className="modal-footer">
-                                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                </ div>
                             
                             <div className="row justify-content-center">
                                 <div className="col-md-auto">
                                 <a href="#myModal1" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button">Generar Estado de Resultados</a>
-                                <div id="myModal1" className="modal fade">
-                                    <div className="modal-dialog modal-xl" role="document">
-                                        <div className="modal-content">
-                                            <div className="modal-header">
-                                                <h5 className="modal-title" id="exampleModalLongTitle">Estado de Resultados</h5>
-                                                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div className="modal-body">
-                                                <section className ="flex-container">
-                                                    <table className="table-responsive table-borderless">
-                                                        <thead>
-                                                            <th scope="col"></th>
-                                                            <th className="tituloCentro" scope="col">Periodo</th>
-                                                            <th className="tituloCentro" scope="col">%</th>
-                                                            <th className="tituloCentro" scope="col">Acomulado</th>
-                                                            <th className="tituloCentro" scope="col">%</th>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <th scope="row">I&nbsp;n&nbsp;g&nbsp;r&nbsp;e&nbsp;s&nbsp;o&nbsp;s</th>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Servicios</td>
-                                                                <td className="cantidad">187,725.94</td>
-                                                                <td className="porcentaje">100.00</td>
-                                                                <td className="cantidad"> 1,578,932.85</td>
-                                                                <td className="porcentaje">100.00</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row"></td>
-                                                                <td><hr></hr> </td>
-                                                                <td></td>
-                                                                <td><hr></hr></td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row">Total Ingesos</th>
-                                                                <td className="cantidad">187,725.94</td>
-                                                                <td className="porcentaje">100.00</td>
-                                                                <td className="cantidad">1,578,932.85</td>
-                                                                <td className="porcentaje">100.00</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row">E&nbsp;g&nbsp;r&nbsp;e&nbsp;s&nbsp;o&nbsp;s</th>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">GASTOS DE SERVICIO</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Servicio de Operacion</td>
-                                                                <td className="cantidad">57,897.22 </td>
-                                                                <td className="porcentaje">30.84</td>
-                                                                <td className="cantidad">358,346.14 </td>
-                                                                <td className="porcentaje">22.70</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row"></td>
-                                                                <td><hr></hr> </td>
-                                                                <td></td>
-                                                                <td><hr></hr></td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Total GASTOS DE SERVICIO</td>
-                                                                <td className="cantidad">57,897.22 </td>
-                                                                <td className="porcentaje">30.84</td>
-                                                                <td className="cantidad">358,346.14 </td>
-                                                                <td className="porcentaje">22.70</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">GASTOS FINANCIEROS</td>
-                                                                <td className="cantidad">1,181.94 </td>
-                                                                <td className="porcentaje">0.63</td>
-                                                                <td className="cantidad">8,964.76 </td>
-                                                                <td className="porcentaje">0.57</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row"><i> &nbsp;GASTOS ADMINISTRATIVOS</i></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Mant de Eq de Transporte</td>
-                                                                <td className="cantidad">4,241.46  </td>
-                                                                <td className="porcentaje">2.26</td>
-                                                                <td className="cantidad">11,022.04</td>
-                                                                <td className="porcentaje">0.70</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Arrendamineto</td>
-                                                                <td className="cantidad">4,720.29  </td>
-                                                                <td className="porcentaje">2.51</td>
-                                                                <td className="cantidad">28,321.70</td>
-                                                                <td className="porcentaje">1.79</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Primas de seguro</td>
-                                                                <td className="cantidad">4,591.01</td>
-                                                                <td className="porcentaje">2.45</td>
-                                                                <td className="cantidad">20,853.83</td>
-                                                                <td className="porcentaje">1.32</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Luz</td>
-                                                                <td className="cantidad">5,047.07</td>
-                                                                <td className="porcentaje">2.69</td>
-                                                                <td className="cantidad">10,103.32 </td>
-                                                                <td className="porcentaje">0.64</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td scope="row">Papeleria y Utiles</td>
-                                                                <td className="cantidad">499.48</td>
-                                                                <td className="porcentaje">0.27</td>
-                                                                <td className="cantidad">3732.11</td>
-                                                                <td className="porcentaje">0.24</td>
-                                                            </tr>
+                                
+                                <div id="myModal1" ref={reference2} className="modal fade">
+                                    
+                                        <div className="modal-dialog modal-xl" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title" id="exampleModalLongTitle">Estado de Resultados</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <section className ="flex-container">
+                                                        <table className="table-responsive table-borderless">
+                                                            <thead>
+                                                                <th scope="col"></th>
+                                                                <th className="tituloCentro" scope="col">Periodo</th>
+                                                                <th className="tituloCentro" scope="col">%</th>
+                                                                <th className="tituloCentro" scope="col">Acomulado</th>
+                                                                <th className="tituloCentro" scope="col">%</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <th scope="row">I&nbsp;n&nbsp;g&nbsp;r&nbsp;e&nbsp;s&nbsp;o&nbsp;s</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Servicios</td>
+                                                                    <td className="cantidad">187,725.94</td>
+                                                                    <td className="porcentaje">100.00</td>
+                                                                    <td className="cantidad"> 1,578,932.85</td>
+                                                                    <td className="porcentaje">100.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row"></td>
+                                                                    <td><hr></hr> </td>
+                                                                    <td></td>
+                                                                    <td><hr></hr></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">Total Ingesos</th>
+                                                                    <td className="cantidad">187,725.94</td>
+                                                                    <td className="porcentaje">100.00</td>
+                                                                    <td className="cantidad">1,578,932.85</td>
+                                                                    <td className="porcentaje">100.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">E&nbsp;g&nbsp;r&nbsp;e&nbsp;s&nbsp;o&nbsp;s</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">GASTOS DE SERVICIO</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Servicio de Operacion</td>
+                                                                    <td className="cantidad">57,897.22 </td>
+                                                                    <td className="porcentaje">30.84</td>
+                                                                    <td className="cantidad">358,346.14 </td>
+                                                                    <td className="porcentaje">22.70</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row"></td>
+                                                                    <td><hr></hr> </td>
+                                                                    <td></td>
+                                                                    <td><hr></hr></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Total GASTOS DE SERVICIO</td>
+                                                                    <td className="cantidad">57,897.22 </td>
+                                                                    <td className="porcentaje">30.84</td>
+                                                                    <td className="cantidad">358,346.14 </td>
+                                                                    <td className="porcentaje">22.70</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">GASTOS FINANCIEROS</td>
+                                                                    <td className="cantidad">1,181.94 </td>
+                                                                    <td className="porcentaje">0.63</td>
+                                                                    <td className="cantidad">8,964.76 </td>
+                                                                    <td className="porcentaje">0.57</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row"><i> &nbsp;GASTOS ADMINISTRATIVOS</i></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Mant de Eq de Transporte</td>
+                                                                    <td className="cantidad">4,241.46  </td>
+                                                                    <td className="porcentaje">2.26</td>
+                                                                    <td className="cantidad">11,022.04</td>
+                                                                    <td className="porcentaje">0.70</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Arrendamineto</td>
+                                                                    <td className="cantidad">4,720.29  </td>
+                                                                    <td className="porcentaje">2.51</td>
+                                                                    <td className="cantidad">28,321.70</td>
+                                                                    <td className="porcentaje">1.79</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Primas de seguro</td>
+                                                                    <td className="cantidad">4,591.01</td>
+                                                                    <td className="porcentaje">2.45</td>
+                                                                    <td className="cantidad">20,853.83</td>
+                                                                    <td className="porcentaje">1.32</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Luz</td>
+                                                                    <td className="cantidad">5,047.07</td>
+                                                                    <td className="porcentaje">2.69</td>
+                                                                    <td className="cantidad">10,103.32 </td>
+                                                                    <td className="porcentaje">0.64</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td scope="row">Papeleria y Utiles</td>
+                                                                    <td className="cantidad">499.48</td>
+                                                                    <td className="porcentaje">0.27</td>
+                                                                    <td className="cantidad">3732.11</td>
+                                                                    <td className="porcentaje">0.24</td>
+                                                                </tr>
 
-                                                        </tbody>
-                                                    </table>
-                                                </section>
+                                                            </tbody>
+                                                        </table>
+                                                    </section>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                                                </div>
                                             </div>
-                                            <div className="modal-footer">
-                                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal">OK</button>
-                                            </div>
-                                        </div>
-                                    </div>    
+                                        </div>  
+                                     
                                 </div>
                             </div>
                             <div className="row justify-content-center">
                                 <div className="col-md-auto">
                                 <a href="#myModal2" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button">Generar Balance de comprobacion</a>
-                                <div id="myModal2" className="modal fade">
+                                
+                                <div id="myModal2" ref={reference3} className="modal fade">
                                     <div className="modal-dialog modal-xl" role="document">
                                         <div className="modal-content">
                                             <div className="modal-header">
