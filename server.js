@@ -146,6 +146,7 @@ async function uploadMovimientos(req, res) {
     var EmptyRow4 = "";
     var count = 0;
     var submit_id = 0;
+    var lastDate = "";
 
     // Create an ID for Submission
     await mov_Model.find().sort({"Submission_id":-1}).limit(1).then( (result) => {
@@ -180,6 +181,7 @@ async function uploadMovimientos(req, res) {
                     var VTOTAL_CARGOS =  line["__EMPTY_3"];
                     var VTOTAL_ABONOS =  line["__EMPTY_4"];
                     var VTOTAL_SALDO =  line["Hoja:      1"];
+                    var VFECHA = lastDate;
                     var now = new Date();
                     moment.locale('es')
                     var VFECHA_SUBIDA = moment(now).format('LL, h:mm a');
@@ -195,6 +197,7 @@ async function uploadMovimientos(req, res) {
                         Submission_id:          submit_id,
                         Cuenta:                 VCUENTA,
                         Categoria_Total:        VCATEGORIA,
+                        Fecha:                  VFECHA,
                         Total_Cargos:           VTOTAL_CARGOS,
                         Total_Abonos:           VTOTAL_ABONOS,
                         Total_Saldo:            VTOTAL_SALDO,
@@ -217,6 +220,8 @@ async function uploadMovimientos(req, res) {
                     var VREGISTRO = ++count;
                     var VCUENTA = account;
                     var VFECHA = line["CONTPAQ i"];
+                    lastDate = VFECHA;
+                    
                     var VTIPO = line["__EMPTY"];
                     var VNUMERO = line["__EMPTY_1"];
                     var VCONCEPTO = line["Lecar Consultoria en TI, S.C."];
@@ -406,6 +411,15 @@ app.get("/recibirMovimientos", (req, res) => {
     })
 });
 
+//Método get para cuetas
+app.get("/recibirCuentas", (req, res) => {
+    catalogo_Model.find().then ( (result) => {
+        res.send(result);
+    }).catch( (err) => {
+        console.log(err);
+    })
+});
+
 //Método get para movimientos
 app.get("/recibir_FechasDe_Movimientos/:id/:id2", (req, res) => {
     var dict = new Object();
@@ -419,15 +433,11 @@ app.get("/recibir_FechasDe_Movimientos/:id/:id2", (req, res) => {
     var mes2 = req.params.id2;
 
     if (mes1 != mes2) {
-        // We can either convert a string to JSON
-        var string_query = '{ "$or": [';
-        // Or construct a JSON dynamically
+        // Construct a JSON dynamically
         var dQuery = { $or: [] };
 
     } else {
-        var string_query = '{ "Fecha" : { "$regex" :  ' + '"' + mes1 + '", ' + '"$options" : "i" }}';
         var dQuery = { Fecha : { '$regex' :  mes1, '$options' : 'i' }  };
-        var quer = JSON.parse(string_query);
     }
 
     console.log("mes1: ", mes1);
@@ -443,14 +453,6 @@ app.get("/recibir_FechasDe_Movimientos/:id/:id2", (req, res) => {
         for (i=start; i<=end; i++) {
             console.log("Month: ", Object.keys(dict).find(key => dict[key] === i));
             month_i = Object.keys(dict).find(key => dict[key] === i)
-            // Building string 
-            // *IMPORTANT: Use '' for start-end, and "" for parameters
-            // String must not contain final commas, we use a conditional
-            if (i == range) {
-                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }}';
-            } else {
-                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }},';
-            }
 
             // Building a JSON
             dQuery["$or"].push( {Fecha : { '$regex' :  month_i, '$options' : 'i' }}, );
@@ -468,42 +470,13 @@ app.get("/recibir_FechasDe_Movimientos/:id/:id2", (req, res) => {
             console.log("Month: ", Object.keys(dict).find(key => dict[key] === start));
             month_i = Object.keys(dict).find(key => dict[key] === start)
             start++;
-            // Building string 
-            // *IMPORTANT: Use '' for start-end, and "" for parameters
-            // String must not contain final commas, we use a conditional
-            if (i == range) {
-                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }}';
-            } else {
-                string_query += '{ "Fecha" : { "$regex" :  ' + '"' + month_i + '", ' + '"$options" : "i" }},';
-            }
 
             // Building a JSON
             dQuery["$or"].push( {Fecha : { '$regex' :  month_i, '$options' : 'i' }}, );
         }
     }
-
-    // Final piece for string
-    if (mes1 != mes2) string_query += ' ]} '
-    console.log(string_query);
-    var quer = JSON.parse(string_query);
     
-    /*
-    // To manage keys in json -> dict[key]
-    
-    if (dict.hasOwnProperty(mes1)) {
-        console.log("dict[mes]: ",dict[mes1]);
-    };
-    
-    // To manage values within the json -> Object.keys(dict).find(key => dict[key] === 'desired value')
-
-    const mes_key = Object.keys(dict).find(key => dict[key] === 6);
-    console.log("mes_key: ",mes_key);
-    
-    */
-
-    // Both methods work
     console.log("dQuery: ", dQuery);
-    console.log("quer", quer);
 
     mov_Model.find( dQuery ).then( (result) => {
         res.send(result);
