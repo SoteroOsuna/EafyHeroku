@@ -148,122 +148,126 @@ function Dashboard(){
     }
 
     const generarReporteBG = () => {
-    console.log(reportGenerated);
-        if (!reportGenerated) {
-            console.log(Mes_Rep1);
-            console.log(Mes_Rep2);
+        console.log(Mes_Rep1);
+        console.log(Mes_Rep2);
 
-            axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}`).then(resp => {
-                const datos = resp.data;
-                console.log(datos); 
-                if (datos.length == 0) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'ERROR:',
-                        text: 'No existen registros en la DB con la fecha especificada :('
-                    })
-                }  
-                   
-                console.log("checando datos...");
-                for (let i = 0; i < datos.length; i++) {
-                    console.log(datos[i]);
-                    if (datos[i]["Categoria_Total"] != "Movimiento de Cuenta Común" &&
-                        (datos[i]["Total_Cargos"] || datos[i]["Total_Abonos"] || datos[i]["Total_Saldo"]) ) {
-                            
+        axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}`).then(resp => {
+            const datos = resp.data;
+            console.log(datos); 
+            if (datos.length == 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ERROR:',
+                    text: 'No existen registros en la DB con la fecha especificada :('
+                })
+            }  
+                
+            console.log("checando datos...");
+            for (let i = 0; i < datos.length; i++) {
+                console.log(datos[i]);
+                if (datos[i]["Categoria_Total"] != "Movimiento de Cuenta Común" &&
+                    (datos[i]["Total_Cargos"] || datos[i]["Total_Abonos"] || datos[i]["Total_Saldo"]) ) {
+                        if (cuentasBG[datos[i]["Categoria_Total"]] == null) {
                             if(datos[i]["Categoria_Total"].substring(0,12) == "Depreciación") {
                                 setCuentasBG(cuentasBG[datos[i]["Categoria_Total"]] = -1*datos[i]["Total_Saldo"]);
                             } else {
                                 setCuentasBG(cuentasBG[datos[i]["Categoria_Total"]] = datos[i]["Total_Saldo"]);
                             }
-                        let codigo = parseInt(datos[i]["Cuenta"].substring(0,3));
-                        console.log(codigo);
-                        if (codigo >= limitesBG["ActivoCiculante"][0] && codigo <= limitesBG["ActivoCiculante"][1]) {
-                            activoCirculante.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo >= limitesBG["ActivoFijo"][0] && codigo <= limitesBG["ActivoFijo"][1]) {
-                            activoFijo.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo >= limitesBG["ActivoDiferido"][0] && codigo <= limitesBG["ActivoDiferido"][1]) {
-                            activoDiferido.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo >= limitesBG["PasivoCirculante"][0] && codigo <= limitesBG["PasivoCirculante"][1]) {
-                            pasivoCirculante.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo >= limitesBG["PasivoFijo"][0] && codigo <= limitesBG["PasivoFijo"][1]) {
-                            pasivoFijo.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo >= limitesBG["PasivoDiferido"][0] && codigo <= limitesBG["PasivoDiferido"][1]) {
-                            pasivoDiferido.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo < 100) {
-                            capital.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo >= limitesBG["Ingresos"][0] && codigo <= limitesBG["Ingresos"][1]) {
-                            ingresos.push(datos[i]["Categoria_Total"]);
-                        } else if (codigo >= 500) {
-                            egresos.push(datos[i]["Categoria_Total"]);
+                        } else {
+                            if(datos[i]["Categoria_Total"].substring(0,12) == "Depreciación") {
+                                setCuentasBG(cuentasBG[datos[i]["Categoria_Total"]] += -1*datos[i]["Total_Saldo"]);
+                            } else {
+                                setCuentasBG(cuentasBG[datos[i]["Categoria_Total"]] += datos[i]["Total_Saldo"]);
+                            }
                         }
+                    let codigo = parseInt(datos[i]["Cuenta"].substring(0,3));
+                    console.log(codigo);
+                    if (codigo >= limitesBG["ActivoCiculante"][0] && codigo <= limitesBG["ActivoCiculante"][1]) {
+                        activoCirculante.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo >= limitesBG["ActivoFijo"][0] && codigo <= limitesBG["ActivoFijo"][1]) {
+                        activoFijo.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo >= limitesBG["ActivoDiferido"][0] && codigo <= limitesBG["ActivoDiferido"][1]) {
+                        activoDiferido.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo >= limitesBG["PasivoCirculante"][0] && codigo <= limitesBG["PasivoCirculante"][1]) {
+                        pasivoCirculante.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo >= limitesBG["PasivoFijo"][0] && codigo <= limitesBG["PasivoFijo"][1]) {
+                        pasivoFijo.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo >= limitesBG["PasivoDiferido"][0] && codigo <= limitesBG["PasivoDiferido"][1]) {
+                        pasivoDiferido.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo < 100) {
+                        capital.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo >= limitesBG["Ingresos"][0] && codigo <= limitesBG["Ingresos"][1]) {
+                        ingresos.push(datos[i]["Categoria_Total"]);
+                    } else if (codigo >= 500) {
+                        egresos.push(datos[i]["Categoria_Total"]);
                     }
                 }
-                console.log("datos checados");
-                for (const activoC of activoCirculante) {
-                    setTotales(totales[0] += cuentasBG[activoC]);
-                }
-                for (const activoF of activoFijo) {
-                    setTotales(totales[1] += cuentasBG[activoF]);
-                }
-                for (const activoD of activoDiferido) {
-                    setTotales(totales[2] += cuentasBG[activoD]);
-                }
-                for (const pasivoC of pasivoCirculante) {
-                    setTotales(totales[3] += cuentasBG[pasivoC]);
-                }
-                for (const pasivoF of pasivoFijo) {
-                    setTotales(totales[4] += cuentasBG[pasivoF]);
-                }
-                for (const pasivoD of pasivoDiferido) {
-                    setTotales(totales[5] += cuentasBG[pasivoD]);
-                }
-                for (const c of capital) {
-                    setTotales(totales[6] += cuentasBG[c]);
-                }
-                for (const i of ingresos) {
-                    setTotales(totales[7] += cuentasBG[i]);
-                }
-                for (const e of egresos) {
-                    setTotales(totales[7] -= cuentasBG[e]);
-                }
+            }
+            console.log("datos checados");
+            for (const activoC of activoCirculante) {
+                setTotales(totales[0] += cuentasBG[activoC]);
+            }
+            for (const activoF of activoFijo) {
+                setTotales(totales[1] += cuentasBG[activoF]);
+            }
+            for (const activoD of activoDiferido) {
+                setTotales(totales[2] += cuentasBG[activoD]);
+            }
+            for (const pasivoC of pasivoCirculante) {
+                setTotales(totales[3] += cuentasBG[pasivoC]);
+            }
+            for (const pasivoF of pasivoFijo) {
+                setTotales(totales[4] += cuentasBG[pasivoF]);
+            }
+            for (const pasivoD of pasivoDiferido) {
+                setTotales(totales[5] += cuentasBG[pasivoD]);
+            }
+            for (const c of capital) {
+                setTotales(totales[6] += cuentasBG[c]);
+            }
+            for (const i of ingresos) {
+                setTotales(totales[7] += cuentasBG[i]);
+            }
+            for (const e of egresos) {
+                setTotales(totales[7] -= cuentasBG[e]);
+            }
 
-                console.log(cuentasBG);
-                console.log(totales);
-                setCuentasBG(cuentas);
-                console.log(activoCirculante);
-                console.log(capital);
-                console.log(ingresos);
-                console.log(egresos);
-                llenarTablaRBG("tabla-activos-circulante", activoCirculante, "Total CIRCULANTE", 0);
-                llenarTablaRBG("tabla-activos-fijo", activoFijo, "Total FIJO", 1);
-                llenarTablaRBG("tabla-activos-diferido", activoDiferido, "Total DIFERIDO", 2);
-                llenarTablaRBG("tabla-pasivos-circulante", pasivoCirculante, "Total CIRCULANTE", 3);
-                llenarTablaRBG("tabla-pasivos-fijo", pasivoFijo, "Total FIJO", 4);
-                llenarTablaRBG("tabla-pasivos-diferido", pasivoDiferido, "Total DIFERIDO", 5);
-                llenarTablaRBG("tabla-capital", capital, "Total CAPITAL", 6);
-                sumarTotal("tabla-suma-activos", "SUMA DEL ACTIVO");
-                sumarTotal("tabla-suma-pasivos", "SUMA DEL PASIVO");
-                sumarTotal("tabla-suma-capital", "SUMA DEL CAPITAL");
-                sumarTotal("tabla-suma-pc", "SUMA DEL PASIVO Y CAPITAL");
+            console.log(cuentasBG);
+            console.log(totales);
+            setCuentasBG(cuentas);
+            console.log(activoCirculante);
+            console.log(capital);
+            console.log(ingresos);
+            console.log(egresos);
+            llenarTablaRBG("tabla-activos-circulante", activoCirculante, "Total CIRCULANTE", 0);
+            llenarTablaRBG("tabla-activos-fijo", activoFijo, "Total FIJO", 1);
+            llenarTablaRBG("tabla-activos-diferido", activoDiferido, "Total DIFERIDO", 2);
+            llenarTablaRBG("tabla-pasivos-circulante", pasivoCirculante, "Total CIRCULANTE", 3);
+            llenarTablaRBG("tabla-pasivos-fijo", pasivoFijo, "Total FIJO", 4);
+            llenarTablaRBG("tabla-pasivos-diferido", pasivoDiferido, "Total DIFERIDO", 5);
+            llenarTablaRBG("tabla-capital", capital, "Total CAPITAL", 6);
+            sumarTotal("tabla-suma-activos", "SUMA DEL ACTIVO");
+            sumarTotal("tabla-suma-pasivos", "SUMA DEL PASIVO");
+            sumarTotal("tabla-suma-capital", "SUMA DEL CAPITAL");
+            sumarTotal("tabla-suma-pc", "SUMA DEL PASIVO Y CAPITAL");
 
-                var tablaC = document.getElementById("tabla-capital");
-                var row = tablaC.insertRow(tablaC.rows.length);
-                var cell0 = row.insertCell(0);
-                var element = document.createElement("p");
-                element.innerHTML = "Utilidad o Pérdida del Ejercicio";
-                cell0.appendChild(element);
+            var tablaC = document.getElementById("tabla-capital");
+            var row = tablaC.insertRow(tablaC.rows.length);
+            var cell0 = row.insertCell(0);
+            var element = document.createElement("p");
+            element.innerHTML = "Utilidad o Pérdida del Ejercicio";
+            cell0.appendChild(element);
 
-                var cell1 = row.insertCell(1);
-                element = document.createElement("p");
-                element.innerHTML = totales[7].toFixed(2);
-                cell1.appendChild(element);
+            var cell1 = row.insertCell(1);
+            element = document.createElement("p");
+            element.innerHTML = totales[7].toFixed(2);
+            cell1.appendChild(element);
 
-                
-                
-                
-                setReportGenerated(current => !current);
-            });
-        }
+            
+            
+            
+            setReportGenerated(current => !current);
+        });
     };
 
     const generarReporteER = () => {
@@ -290,12 +294,14 @@ function Dashboard(){
                     ingresos.push(catalogoCuentas[i]["Codigo"]);
                     diccionarioCN[catalogoCuentas[i]["Codigo"]] = catalogoCuentas[i]["Nombre"];
                     diccionarioCN[catalogoCuentas[i]["Nombre"]] = catalogoCuentas[i]["Codigo"];
+                    setCuentasER(cuentasER[catalogoCuentas[i]["Codigo"]] = [0, 0]);
                 } else if (parseInt(catalogoCuentas[i]["Codigo"].substring(0,3)) > 500 && catalogoCuentas[i]["Codigo"].substring(4,8) == "0000") {
                     egresos.push(catalogoCuentas[i]["Codigo"]);
                     asignacion[catalogoCuentas[i]["Codigo"].substring(0,3)] = catalogoCuentas[i]["Codigo"];
                     egresosSub[asignacion[catalogoCuentas[i]["Codigo"].substring(0,3)]] = [];
                     diccionarioCN[catalogoCuentas[i]["Codigo"]] = catalogoCuentas[i]["Nombre"];
                     diccionarioCN[catalogoCuentas[i]["Nombre"]] = catalogoCuentas[i]["Codigo"];
+                    setCuentasER(cuentasER[catalogoCuentas[i]["Codigo"]] = [0, 0]);
                 } else if (parseInt(catalogoCuentas[i]["Codigo"].substring(0,3)) > 500) {
                     if (asignacion[catalogoCuentas[i]["Codigo"].substring(0,3)] == null) {
                         pendientes.push(catalogoCuentas[i]);
@@ -303,6 +309,7 @@ function Dashboard(){
                         egresosSub[asignacion[catalogoCuentas[i]["Codigo"].substring(0,3)]].push(catalogoCuentas[i]["Codigo"]);
                         diccionarioCN[catalogoCuentas[i]["Codigo"]] = catalogoCuentas[i]["Nombre"];
                         diccionarioCN[catalogoCuentas[i]["Nombre"]] = catalogoCuentas[i]["Codigo"];
+                        setCuentasER(cuentasER[catalogoCuentas[i]["Codigo"]] = [0, 0]);
                     }
                 }
             }
@@ -313,6 +320,7 @@ function Dashboard(){
                     egresosSub[asignacion[pendientes[i]["Codigo"].substring(0,3)]].push(pendientes[i]["Codigo"]);
                     diccionarioCN[catalogoCuentas[i]["Codigo"]] = catalogoCuentas[i]["Nombre"];
                     diccionarioCN[catalogoCuentas[i]["Nombre"]] = catalogoCuentas[i]["Codigo"];
+                    setCuentasER(cuentasER[catalogoCuentas[i]["Codigo"]] = [0, 0]);
                 }
             }
 
@@ -334,10 +342,15 @@ function Dashboard(){
 
                     console.log("Codigo decidido:", codigo);
                     if (movimientos[i]["Total_Cargos"] > 0 && movimientos[i]["Total_Abonos"] == 0) {
-                        setCuentasER(cuentasER[codigo] = [movimientos[i]["Total_Cargos"], movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasER[codigo];
+                        currObj[0] += movimientos[i]["Total_Cargos"];
+                        currObj[1] += movimientos[i]["Total_Saldo"];
+                        setCuentasER(cuentasER[codigo] = currObj);
                     } else{
-                        // if (movimientos[i]["Total_Abonos"] > 0 && movimientos[i]["Total_Cargos"] == 0) 
-                        setCuentasER(cuentasER[codigo] = [movimientos[i]["Total_Abonos"],movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasER[codigo];
+                        currObj[0] += movimientos[i]["Total_Abonos"];
+                        currObj[1] += movimientos[i]["Total_Saldo"];
+                        setCuentasER(cuentasER[codigo] = currObj);
                     }
                 }
             }
@@ -661,7 +674,12 @@ function Dashboard(){
                         sInicial = movimientos[i]["Total_Saldo"] + movimientos[i]["Total_Abonos"] - movimientos[i]["Total_Cargos"];
                     }
                     if(movimientos[i]["Categoria_Total"] == "Movimiento de Cuenta Común") {
-                        setCuentasBC(cuentasBC[movimientos[i]["Cuenta"]] = [sInicial, movimientos[i]["Total_Cargos"], movimientos[i]["Total_Abonos"], movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasBC[movimientos[i]["Cuenta"]];
+                        currObj[0] += sInicial;
+                        currObj[1] += movimientos[i]["Total_Cargos"];
+                        currObj[2] += movimientos[i]["Total_Abonos"];
+                        currObj[3] += movimientos[i]["Total_Saldo"];
+                        setCuentasBC(cuentasBC[movimientos[i]["Cuenta"]] = currObj);
                     } else {
                         var codigo = "";
                         if (movimientos[i]["Cuenta"] != diccionarioCN[movimientos[i]["Categoria_Total"]] && diccionarioCN[movimientos[i]["Categoria_Total"]] != null) {
@@ -673,7 +691,12 @@ function Dashboard(){
                         } else {
                             codigo = movimientos[i]["Cuenta"];
                         }
-                        setCuentasBC(cuentasBC[codigo] = [sInicial, movimientos[i]["Total_Cargos"], movimientos[i]["Total_Abonos"], movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasBC[movimientos[i]["Cuenta"]];
+                        currObj[0] += sInicial;
+                        currObj[1] += movimientos[i]["Total_Cargos"];
+                        currObj[2] += movimientos[i]["Total_Abonos"];
+                        currObj[3] += movimientos[i]["Total_Saldo"];
+                        setCuentasBC(cuentasBC[codigo] = currObj);
                         
                     }
                 }
