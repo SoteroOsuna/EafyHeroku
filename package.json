@@ -16,6 +16,7 @@
   "bugs": {
     "url": "https://github.com/GmoWilliams/EafyHeroku/issues"
   },
+  
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
