@@ -7,6 +7,7 @@ import Footer from "./partials/Footer";
 
 
 function App(){
+    document.title = "Eafy Heroku"
     return (
         <Router>
             <div>
