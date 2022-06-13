@@ -7,6 +7,7 @@ import Pdf from "react-to-pdf";
 //import { jsPDF } from "jspdf";
 import jsPDF from 'jspdf'
 import html2canvas from "html2canvas";
+import { compareSync } from "bcryptjs";
 
 
 const reference1 = React.createRef();
@@ -183,23 +184,41 @@ function Dashboard(){
                     let codigo = parseInt(datos[i]["Cuenta"].substring(0,3));
                     console.log(codigo);
                     if (codigo >= limitesBG["ActivoCiculante"][0] && codigo <= limitesBG["ActivoCiculante"][1]) {
-                        activoCirculante.push(datos[i]["Categoria_Total"]);
+                        if (!activoCirculante.includes(datos[i]["Categoria_Total"])) {
+                            activoCirculante.push(datos[i]["Categoria_Total"]);
+                        } 
                     } else if (codigo >= limitesBG["ActivoFijo"][0] && codigo <= limitesBG["ActivoFijo"][1]) {
-                        activoFijo.push(datos[i]["Categoria_Total"]);
+                        if (!activoFijo.includes(datos[i]["Categoria_Total"])){
+                            activoFijo.push(datos[i]["Categoria_Total"]);
+                        }
                     } else if (codigo >= limitesBG["ActivoDiferido"][0] && codigo <= limitesBG["ActivoDiferido"][1]) {
-                        activoDiferido.push(datos[i]["Categoria_Total"]);
+                        if (!activoDiferido.includes(datos[i]["Categoria_Total"])) {
+                            activoDiferido.push(datos[i]["Categoria_Total"]);
+                        }
                     } else if (codigo >= limitesBG["PasivoCirculante"][0] && codigo <= limitesBG["PasivoCirculante"][1]) {
-                        pasivoCirculante.push(datos[i]["Categoria_Total"]);
+                        if (!pasivoCirculante.includes(datos[i]["Categoria_Total"])) {
+                            pasivoCirculante.push(datos[i]["Categoria_Total"]);
+                        }
                     } else if (codigo >= limitesBG["PasivoFijo"][0] && codigo <= limitesBG["PasivoFijo"][1]) {
-                        pasivoFijo.push(datos[i]["Categoria_Total"]);
+                        if (!pasivoFijo.includes(datos[i]["Categoria_Total"])) {
+                            pasivoFijo.push(datos[i]["Categoria_Total"]);
+                        }
                     } else if (codigo >= limitesBG["PasivoDiferido"][0] && codigo <= limitesBG["PasivoDiferido"][1]) {
-                        pasivoDiferido.push(datos[i]["Categoria_Total"]);
+                        if (!pasivoDiferido.includes(datos[i]["Categoria_Total"])) {
+                            pasivoDiferido.push(datos[i]["Categoria_Total"]);
+                        }
                     } else if (codigo < 100) {
-                        capital.push(datos[i]["Categoria_Total"]);
+                        if (!capital.includes(datos[i]["Categoria_Total"])) {
+                            capital.push(datos[i]["Categoria_Total"]);
+                        }      
                     } else if (codigo >= limitesBG["Ingresos"][0] && codigo <= limitesBG["Ingresos"][1]) {
-                        ingresos.push(datos[i]["Categoria_Total"]);
+                        if (!ingresos.includes(datos[i]["Categoria_Total"])) {
+                            ingresos.push(datos[i]["Categoria_Total"]);
+                        }
                     } else if (codigo >= 500) {
-                        egresos.push(datos[i]["Categoria_Total"]);
+                        if (!egresos.includes(datos[i]["Categoria_Total"])) {
+                            egresos.push(datos[i]["Categoria_Total"]);
+                        }
                     }
                 }
             }
@@ -287,7 +306,8 @@ function Dashboard(){
             var catalogoCuentas = resp1.data;
             var movimientos = resp2.data;
             var pendientes = [];
-
+            
+            console.log("Comenzamos");
             //Revisar el catálogo y ver cuentas que estarán en el reporte ER
             for (let i = 0; i < catalogoCuentas.length; i++) {
                 if (parseInt(catalogoCuentas[i]["Codigo"].substring(0,3)) >= 400 && parseInt(catalogoCuentas[i]["Codigo"].substring(0,3)) < 500) {
@@ -361,11 +381,15 @@ function Dashboard(){
                     ingresosTotal[1] += cuentasER[ingresos[i]][1];
                 }
             }
+            console.log("Calculando total de ingresos");
             //Calcular el total de cada categoría de egresos
             for (let i = 0; i<egresos.length; i++) {
                 var currTotal = [0,0];
-                if (cuentasER[egresos[i]] == null) {
+                console.log("Vamos con la categoria: ", diccionarioCN[egresos[i]]);
+                console.log(cuentasER[egresos[i]]);
+                if (cuentasER[egresos[i]][0] == 0 && cuentasER[egresos[i]][1] == 0) {
                     for (let j = 0; j<egresosSub[egresos[i]].length; j++) {
+                        console.log("Vamos con la subcategoria: ", diccionarioCN[egresosSub[egresos[i]]]);
                         if(cuentasER[egresosSub[egresos[i]][j]] != null) {
                             currTotal[0] += cuentasER[egresosSub[egresos[i]][j]][0];
                             currTotal[1] += cuentasER[egresosSub[egresos[i]][j]][1];
@@ -380,6 +404,12 @@ function Dashboard(){
                 }
             }
             console.log(diccionarioCN);
+            console.log(ingresos);
+            console.log(egresos);
+            console.log(egresosSub);
+            console.log(ingresosTotal);
+            console.log(egresosTotal);
+            console.log(cuentasER);
             //Añadir contenido HTML a la página: 
 
             //Añadir titulo de ingresos: 
@@ -392,7 +422,7 @@ function Dashboard(){
 
             //Agregar subcategorías de ingresos:
             for (let i = 0; i < ingresos.length; i++) {
-                if (cuentasER[ingresos[i]] != null) {
+                if (cuentasER[ingresos[i]] != null && (cuentasER[ingresos[i]][0] != 0 || cuentasER[ingresos[i]][1] != 0)) {
                     var Irow = ERTable.insertRow(ERTable.rows.length);
                     var ICell0 = Irow.insertCell(0);
                     var Ielement = document.createElement("p");
@@ -458,7 +488,7 @@ function Dashboard(){
             //Agregar cada categoria de egresos
             egresos.sort();
             for (let i = 0; i < egresos.length; i++) {
-                if (cuentasER[egresos[i]] != null && (cuentasER[egresos[i]][0] != 0 || cuentasER[egresos[i]][1] != 0)) {
+                if (cuentasER[egresos[i]]  && (cuentasER[egresos[i]][0] != 0 || cuentasER[egresos[i]][0] != 0)) {
                     //Agregar título de categoría
                     var Erow = ERTable.insertRow(ERTable.rows.length);
                     var Ecell0 = Erow.insertCell(0);
@@ -469,7 +499,7 @@ function Dashboard(){
                     //Agregar cada subcategoría
                     egresosSub[egresos[i]].sort();
                     for (let j = 0; j<egresosSub[egresos[i]].length;j++) {
-                        if (cuentasER[egresosSub[egresos[i]][j]] != null) {
+                        if (cuentasER[egresosSub[egresos[i]][j]] != null && (cuentasER[egresosSub[egresos[i]][j]][0] != 0 || cuentasER[egresosSub[egresos[i]][j]][1] != 0)) {
                             var SErow = ERTable.insertRow(ERTable.rows.length);
 
                             var SEcell0 = SErow.insertCell(0);
