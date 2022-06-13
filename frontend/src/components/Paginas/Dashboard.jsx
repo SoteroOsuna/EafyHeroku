@@ -1184,217 +1184,222 @@ function Dashboard(){
     }
 
     return(
-        
-        
-        
         <div className="container micontenedor">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
             <script src="https://parall.ax/parallax/js/jspdf.js"></script>
 
-                <h1>Dashboard</h1>
-                <div className="container">
-                    <div className="row justify-content-around">
-                        <div className="col">
-                            <div className="row align-items-center">
-                                <h1 className="text-center"> Registro de Archivos</h1>
-                            {/*}
-                            </div>
-                            <div className="row justify-content-center">
-                            */}
-                                <div className="col-md-auto">
-                                     <form action="/subirMovimientos" method="POST" enctype="multipart/form-data"> 
-                                    
-                                        <div className="form-group">
-                                            <label for="excel">Movimientos Auxiliares del Catálogo</label>
-                                            <input id="excel-file" accept=".xlsx" type="file" className="form-control" name="excel" onChange={onFileChange} required></input>
-                                            <div className="row justify-content-center">
-                                                <div className="col-md-auto">
-                                                    {/* //onClick={clickFunc} */}
-                                                    <button className="btn btn-dark btn-lg" type="submit" onClick={alertaPOST}>
-                                                        Subir Excel (Movimientos Auxiliares del Catálogo) </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
+            <h1>Dashboard</h1>
+            <div className="container">
+                <div className="row row-cols-2 justify-content-around">
 
-                                    <form action="/subirCatalogo" method="POST" encType="multipart/form-data">
-                                        <div className="form-group">
-                                            <label for="excel">Catálogo de Cuentas</label>
-                                            <input type="file" className="form-control" name="excel" onChange={onFileChange} required></input>
-                                            <div className="row justify-content-center">
-                                                <div className="col-md-auto">
-                                                    <button className="btn btn-dark btn-lg" type="submit" onClick={alertaPOST}>Subir Excel (Catálogo de Cuentas)</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    
+                    {/*Columna isquierda o Registro de archivos*/}
+                
+                    <div className="col-5 leftcol align-items-center">
+                        <h1 className="text-center"> Registro de Archivos</h1>
+                        <div className="col-md-auto">
+
+                            <div class="col-container"></div>
+                            
+                            <form action="/subirMovimientos" method="POST" enctype="multipart/form-data"> 
+                                <div className="form-group">
+                                    <label for="excel">Movimientos Auxiliares del Catálogo</label>
+                                    <input id="excel-file" accept=".xlsx" type="file" className="form-control" name="excel" onChange={onFileChange} required></input>
+                                    <div className="col-md-auto align-items-center text-center">
+                                        {/* //onClick={clickFunc} */}
+                                        <button className="btn btn-dark btn-lg btn-costum-size" type="submit" onClick={alertaPOST}>
+                                            Subir Excel (Movimientos Auxiliares del Catálogo) </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
 
+                            <div class="col-container"></div>
+
+                            <form action="/subirCatalogo" method="POST" encType="multipart/form-data">
+                                <div className="form-group">
+                                    <label for="excel">Catálogo de Cuentas</label>
+                                    <input type="file" className="form-control" name="excel" onChange={onFileChange} required></input>
+                                    <div className="col-md-auto align-items-center text-center">
+                                        <button className="btn btn-dark btn-lg btn-costum-size" type="submit" onClick={alertaPOST}>Subir Excel (Catálogo de Cuentas)</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="col-container"></div>
                         </div>
-                        <div className="col">
-                            <div className="row justify-content-center">
+                    </div>
 
+                    <div class="w-100 d-xl-none"></div>
+
+                    {/*Columna del centro*/}
+                    <div class="middlecol xs-auto"></div>
+
+                    <div class="w-100 d-xl-none"></div>
+
+                    {/*Columna derecha o Generacion de reportes*/}
+                    <div className="col-5 rightcol align-items-center">
+                        <div className="col-md-auto align-items-center">
+                            <h1 className="text-center"> Generacion de Reportes</h1>
+
+                            <div class="col-container"></div>
+
+
+
+                            <div className="col-md-auto">
+                                <Select name="mes1" required 
+                                    options = {meses}
+                                    onChange = {handleSelect_Mes_Rep1}
+                                />
                                     
+                            </div>
 
-                                <div className="col-md-auto">
-
-                                    <div className="col-md-auto">
-                                        <Select name="mes1" required 
-                                            options = {meses}
-                                            onChange = {handleSelect_Mes_Rep1}
-                                        />
-                                            
-                                    </div>
-
-                                    <div className="col-md-auto">
-                                        <Select name="mes2" required 
-                                            options = {meses}
-                                            onChange = {handleSelect_Mes_Rep2}
-                                        />
-                                            
-                                    </div>
-                                  
-                                    {/* <a href="#myModal" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button" onClick={() => generarReporteBG()} >Generar Balance General</a> */}
-                                    <a href="#myModal" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button" onClick={() => generarReporteBG()} >Generar Balance General</a>
-
+                            <div className="col-md-auto">
+                                <Select name="mes2" required 
+                                    options = {meses}
+                                    onChange = {handleSelect_Mes_Rep2}
+                                />
                                     
-                                    
+                            </div>
+                            
+                            {/*
+                            <div className="modal-footer">
+                                <Pdf targetRef={reference3} filename="R3.pdf">
+                                    {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Descargar PDF "Balance de Comprobación"</button>}
+                                </Pdf>
+                            </div>
+                            */}
 
-                                    
-                                    
-                                    {/*
-                                    <div className="modal-footer">
-                                        <Pdf targetRef={reference3} filename="R3.pdf">
-                                            {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Descargar PDF "Balance de Comprobación"</button>}
-                                        </Pdf>
-                                    </div>
-                                    */}
+                            <div className="modal-footer">
+                                <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General"</button>
+                            </div>
 
-                                    <div className="modal-footer">
-                                        <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General"</button>
-                                    </div>
+                            <div className="modal-footer">
+                                <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 2"</button>
+                            </div>
 
-                                    <div className="modal-footer">
-                                        <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 2"</button>
-                                    </div>
+                            <div className="modal-footer">
+                                <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 3"</button>
+                            </div>
+                            
 
-                                    <div className="modal-footer">
-                                        <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 3"</button>
-                                    </div>
+                        
+                            <div id="result" className="titulo-seccion" hidden >
+                                <h1>Hello World</h1>
+                                <h1>Hello World</h1>
+                            </div>
+                            <div id="result2" hidden style={{color: "red" }}>
+                                <h1>Hello World</h1>
+                            </div>
 
-                                
-                                    <div id="result" className="titulo-seccion" hidden >
-                                        <h1>Hello World</h1>
-                                        <h1>Hello World</h1>
-                                    </div>
-                                    <div id="result2" hidden style={{color: "red" }}>
-                                        <h1>Hello World</h1>
-                                    </div>
-                                        
-    
+                            <div class="col-container"></div>
 
+                            {/*Boton balance general*/}
+                            <div className="col-md-auto align-items-center text-center">
+                                <a href="#myModal" className="btn btn-primary btn-lg btn-costum-size" data-bs-toggle="modal" role="button" onClick={() => generarReporteBG()}>Generar Balance General</a>
 
-                                </div>
                                 {/*
-                                Modalidad generada al presionar el boton
+                                Modalidad balance general generada al presionar el boton
                                 */}
 
                                 <div id="reference1" ref={reference1} >
                                     <div id="myModal" className="modal fade">
                                         <div className="modal-dialog modal-xl" role="document">
                                             <div className="modal-content">
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title" id="exampleModalLongTitle">Balance General</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div className="modal-body">
-                                                        <h1> Empresa 1</h1>
-                                                        <section className ="flex-container">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title" id="exampleModalLongTitle">Balance General</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <h1> Empresa 1</h1>
+                                                    <section className ="flex-container">
+                                                        
+                                                        <div className="activos">
+                                                            <h1 className="titulo-seccion"> Activos </h1>
+                                                            <h2 className="subtitulo-seccion"> CIRCULANTE</h2>
+                                                            <table id="tabla-activos-circulante">
+                                                                
+                                                            </table>
+                                                            <h2 className="subtitulo-seccion"> FIJO</h2>
+                                                            <table id="tabla-activos-fijo">
+                                                                
+                                                            </table>
+                                                            <h2 className="subtitulo-seccion"> DIFERIDO</h2>
+                                                            <table id="tabla-activos-diferido">
                                                             
-                                                            <div className="activos">
-                                                                <h1 className="titulo-seccion"> Activos </h1>
-                                                                <h2 className="subtitulo-seccion"> CIRCULANTE</h2>
-                                                                <table id="tabla-activos-circulante">
+                                                            </table>
+                                                            
+                                                        </div>
+                                                        <div className="pasivos-capital">
+                                                            <div className="pasivos">
+                                                                <h1 className="titulo-seccion"> Pasivos</h1>
+                                                                <h2 className="subtitulo-seccion">CIRCULANTE</h2>
+                                                                <table id="tabla-pasivos-circulante">
                                                                     
                                                                 </table>
                                                                 <h2 className="subtitulo-seccion"> FIJO</h2>
-                                                                <table id="tabla-activos-fijo">
+                                                                <table id="tabla-pasivos-fijo">
                                                                     
                                                                 </table>
                                                                 <h2 className="subtitulo-seccion"> DIFERIDO</h2>
-                                                                <table id="tabla-activos-diferido">
+                                                                <table id="tabla-pasivos-diferido">
+                                                                    
+                                                                </table>
+                                                                <table id="tabla-suma-pasivos">
+
+                                                                </table>
+                                                            </div>
+                                                            <div className="capital">
+                                                                <h1 className="titulo-seccion">Capital</h1>
+                                                                <h2 className="subtitulo-seccion"> CAPITAL </h2>
+                                                                <table id="tabla-capital">
                                                                 
                                                                 </table>
+
+                                                                <table id="tabla-suma-capital">
+
+                                                                </table>
                                                                 
+                                                        
                                                             </div>
-                                                            <div className="pasivos-capital">
-                                                                <div className="pasivos">
-                                                                    <h1 className="titulo-seccion"> Pasivos</h1>
-                                                                    <h2 className="subtitulo-seccion">CIRCULANTE</h2>
-                                                                    <table id="tabla-pasivos-circulante">
-                                                                        
-                                                                    </table>
-                                                                    <h2 className="subtitulo-seccion"> FIJO</h2>
-                                                                    <table id="tabla-pasivos-fijo">
-                                                                        
-                                                                    </table>
-                                                                    <h2 className="subtitulo-seccion"> DIFERIDO</h2>
-                                                                    <table id="tabla-pasivos-diferido">
-                                                                        
-                                                                    </table>
-                                                                    <table id="tabla-suma-pasivos">
+                                                        </div>
+                                                    </section>
+                                                    <section className="flex-container">
+                                                        <div className="sumas">
+                                                            <table id="tabla-suma-activos">
+                                                                
+                                                            </table>
+                                                        </div>
+                                                        <div className="sumas">
+                                                            <table id="tabla-suma-pc">
+                                                                
+                                                            </table>
+                                                        </div>
+                                                    </section>
+                                                </div>
 
-                                                                    </table>
-                                                                </div>
-                                                                <div className="capital">
-                                                                    <h1 className="titulo-seccion">Capital</h1>
-                                                                    <h2 className="subtitulo-seccion"> CAPITAL </h2>
-                                                                    <table id="tabla-capital">
-                                                                    
-                                                                    </table>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                                                </div>
 
-                                                                    <table id="tabla-suma-capital">
-
-                                                                    </table>
-                                                                    
-                                                            
-                                                                </div>
-                                                            </div>
-                                                        </section>
-                                                        <section className="flex-container">
-                                                            <div className="sumas">
-                                                                <table id="tabla-suma-activos">
-                                                                    
-                                                                </table>
-                                                            </div>
-                                                            <div className="sumas">
-                                                                <table id="tabla-suma-pc">
-                                                                    
-                                                                </table>
-                                                            </div>
-                                                        </section>
-                                                    </div>
-                                                    <div className="modal-footer">
-                                                        <button type="button" className="btn btn-primary" data-bs-dismiss="modal">OK</button>
-                                                    </div>
-
-                                                    <div className="modal-footer">
-                                                        <Pdf targetRef={reference1} filename="R1.pdf">
-                                                            {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Descargar PDF TABLES<i class="far fa-file-pdf ml-1 text-white"></i></button>}
-                                                        </Pdf>
-                                                    </div>
+                                                <div className="modal-footer">
+                                                    <Pdf targetRef={reference1} filename="R1.pdf">
+                                                        {({ toPdf }) => <button className="btn btn-primary" onClick={toPdf}>Descargar PDF TABLES<i class="far fa-file-pdf ml-1 text-white"></i></button>}
+                                                    </Pdf>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </ div>
+                                </div>
+                            </ div>
                             
-                            <div className="row justify-content-center">
-                                <div className="col-md-auto">
-                                <a href="#myModal1" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button" onClick={() => generarReporteER()}>Generar Estado de Resultados</a>
-                                
+                            
+                            {/*Boton Estado de Resultados*/}
+                            <div className="col-md-auto align-items-center text-center">
+                                <a href="#myModal1" className="btn btn-primary btn-lg btn-costum-size" data-bs-toggle="modal" role="button">Generar Estado de Resultados</a>
+
+                                {/*
+                                Modalidad Estado de resultados generada al presionar el boton
+                                */}
+    
                                 <div id="myModal1" ref={reference2} className="modal fade">
                                     
                                         <div className="modal-dialog modal-xl" role="document">
@@ -1432,10 +1437,16 @@ function Dashboard(){
                                      
                                 </div>
                             </div>
-                            <div className="row justify-content-center">
-                                <div className="col-md-auto">
-                                <a href="#myModal2" className="btn btn-dark btn-lg" data-bs-toggle="modal" role="button" onClick={() => generarReporteBC()}>Generar Balance de Comprobacion</a>
+
+                            {/*Boton Balance de Comprobación*/}
+                            <div className="col-md-auto align-items-center text-center">
                                 
+                                <a href="#myModal2" className="btn btn-primary btn-lg btn-costum-size" data-bs-toggle="modal" role="button">Generar Balance de comprobacion</a>
+                                
+                                {/*
+                                    Modalidad Balance de comprobacion generada al presionar el boton
+                                */}
+                                    
                                 <div id="myModal2" ref={reference3} className="modal fade">
                                     <div className="modal-dialog modal-xl" role="document">
                                         <div className="modal-content">
@@ -1480,9 +1491,8 @@ function Dashboard(){
                         </div>
                     </div>
                 </div>
-            </div>        
-        </div>
-    </div>
+            </div>
+        </div>        
     );
 }
 
