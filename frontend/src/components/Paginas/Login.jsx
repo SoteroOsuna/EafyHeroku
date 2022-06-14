@@ -5,7 +5,7 @@ import AuthContext from "../AuthProvider";
 const Swal = require('sweetalert2');
 
 
-function Login(){
+function Login( {setUserData} ){
     const { setAuth } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -34,6 +34,7 @@ function Login(){
         const email = result?.data?.email;
         const accessToken = result?.data?.accessToken;
         setAuth({ email, accessToken });
+        setUserData(input);
         navigate('/dashboard');
         }
         catch(err){
@@ -96,40 +97,45 @@ function Login(){
     return (
         <div className="container micontenedor">
             <h1>Login</h1>
-            <p>A continuación, puedes iniciar sesión aquí!</p>
+            <div className="row justify-content-center">
+                <div className="col-xl-5 align-items-center sm-8">
+                    <p>A continuación, puedes iniciar sesión aquí!</p>
 
-            <main className="form-signin">
-                <form>
-                    <div className="form-floating">
-                        <input
-                            onChange={handleChange}
-                            name="email"
-                            value={input.email}
-                            type="email"
-                            className="form-control"
-                            id="floatingInput"
-                            placeholder="name@example.com"
-                            required />
-                            
-                        <label for="floatingInput">Email address</label>
-                    </div>
-                    <div className="form-floating mb-3">
-                        <input
-                            onChange={handleChange}
-                            name="contraseña"
-                            value={input.contraseña}
-                            type="password"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="Password"
-                            required />
-                        <label for="floatingPassword">Password</label>
-                    </div>
+                    <main className="form-signin">
+                        <form>
+                            <div className="form-floating">
+                                <input
+                                    onChange={handleChange}
+                                    name="email"
+                                    value={input.email}
+                                    type="email"
+                                    className="form-control"
+                                    id="floatingInput"
+                                    placeholder="name@example.com"
+                                    required />
+                                    
+                                <label for="floatingInput">Email address</label>
+                            </div>
+                            <div className="form-floating mb-3">
+                                <input
+                                    onChange={handleChange}
+                                    name="contraseña"
+                                    value={input.contraseña}
+                                    type="password"
+                                    className="form-control"
+                                    id="floatingPassword"
+                                    placeholder="Password"
+                                    required />
+                                <label for="floatingPassword">Password</label>
+                            </div>
 
-                    <button onClick={handleClick} className="w-100 btn btn-lg btn-primary" type="submit">Login</button>
-                    <p className="mt-5 mb-3 text-muted">&copy; 2022 Eafy Solutions</p>
-                </form>
-            </main>
+                            <button onClick={handleClick} className="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+                            <p className="mt-5 mb-3 text-muted">&copy; 2022 Eafy Solutions</p>
+                        </form>
+                    </main>
+
+                </div>
+            </div>
 
         </div>
     );

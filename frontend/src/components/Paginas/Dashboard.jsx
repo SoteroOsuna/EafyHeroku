@@ -15,7 +15,7 @@ const reference3 = React.createRef();
 
 const Swal = require('sweetalert2');
 
-function Dashboard(){
+function Dashboard({userData}){
 
     const [reportGenerated, setReportGenerated] = useState(false);
     const [cuentasBG, setCuentasBG] = useState({});
@@ -148,6 +148,7 @@ function Dashboard(){
     }
 
     const generarReporteBG = () => {
+    console.log(userData);
     console.log(reportGenerated);
         if (!reportGenerated) {
             console.log(Mes_Rep1);
@@ -1030,6 +1031,21 @@ function Dashboard(){
         }
     }
 
+    function mostrarAlertaCat() {
+        // Obtener nombre de archivo
+        let archivo = document.getElementById('excel-file-Cat').value,
+        // Obtener extensión del archivo
+            extension = archivo.substring(archivo.lastIndexOf('.'),archivo.length);
+        // Si la extensión obtenida no está incluida en la lista de valores
+        // del atributo "accept", mostrar un error.
+        if(document.getElementById('excel-file-Cat').getAttribute('accept').split(',').indexOf(extension) < 0) {
+            swal("Archivo inválido", "No se permite la extensión " + extension);
+        }
+        else {
+            valid = true;
+        }
+    }
+
     function alertaPOST() {
         if (valid == true) {
             swal("Ya casi", "A continuación tus datos se mandaran a la DB");
@@ -1080,6 +1096,19 @@ function Dashboard(){
         if (e.target && e.target.files[0]);
         formData.append('excel', e.target.files[0]);
         mostrarAlerta();
+        prev_result = await axios.get("/validateMovimientosTEST");
+        console.log(prev_result);
+        prev_result = prev_result.data.submit_id;
+        console.log("Prev Result: ", prev_result);
+        //console.log({formData})
+    } 
+
+    const onFileChange_Cat = async (e) => {
+        console.log(e.target.files[0])
+        console.log(document.querySelector('#excel-file-Cat').files[0])
+        if (e.target && e.target.files[0]);
+        formData.append('excel', e.target.files[0]);
+        mostrarAlertaCat();
         prev_result = await axios.get("/validateMovimientosTEST");
         console.log(prev_result);
         prev_result = prev_result.data.submit_id;
@@ -1190,11 +1219,11 @@ function Dashboard(){
 
             <h1>Dashboard</h1>
             <div className="container">
-                <div className="row row-cols-2 justify-content-around">
+                <div className="row justify-content-center">
 
-                    {/*Columna isquierda o Registro de archivos*/}
+                    {/*Columna izquierda o Registro de archivos*/}
                 
-                    <div className="col-5 leftcol align-items-center">
+                    <div className="col-md-5 col-sm-6 leftcol align-items-center">
                         <h1 className="text-center"> Registro de Archivos</h1>
                         <div className="col-md-auto">
 
@@ -1217,7 +1246,7 @@ function Dashboard(){
                             <form action="/subirCatalogo" method="POST" encType="multipart/form-data">
                                 <div className="form-group">
                                     <label for="excel">Catálogo de Cuentas</label>
-                                    <input type="file" className="form-control" name="excel" onChange={onFileChange} required></input>
+                                    <input id="excel-file-Cat" accept=".xlsx" type="file" className="form-control" name="excel" onChange={onFileChange_Cat} required></input>
                                     <div className="col-md-auto align-items-center text-center">
                                         <button className="btn btn-dark btn-lg btn-costum-size" type="submit" onClick={alertaPOST}>Subir Excel (Catálogo de Cuentas)</button>
                                     </div>
@@ -1230,13 +1259,8 @@ function Dashboard(){
 
                     <div class="w-100 d-xl-none"></div>
 
-                    {/*Columna del centro*/}
-                    <div class="middlecol xs-auto"></div>
-
-                    <div class="w-100 d-xl-none"></div>
-
                     {/*Columna derecha o Generacion de reportes*/}
-                    <div className="col-5 rightcol align-items-center">
+                    <div className="col-md-5 col-sm-6 rightcol align-items-center">
                         <div className="col-md-auto align-items-center">
                             <h1 className="text-center"> Generacion de Reportes</h1>
 

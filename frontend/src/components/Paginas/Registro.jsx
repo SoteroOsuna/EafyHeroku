@@ -91,52 +91,56 @@ function Registro() {
     return (
         <div className="container micontenedor">
             <h1>Registro</h1>
-            <p>A continuación, puedes registrarte aquí!</p>
+            <div className="row justify-content-center">
+                <div className="col-xl-5 align-items-center sm-8">
+                    <p>A continuación, puedes registrarte aquí!</p>
 
-            <main className="form-signin">
-                <form>
+
+                    <main className="form-signin">
+                        <form>
 
 
-                    <div className="form-floating">
-                        <input
-                            onChange={handleChange}
-                            name="nombre"
-                            value={input.name}
-                            type="text"
-                            className="form-control"
-                            id="floatingInput"
-                            placeholder="name@example.com"/>
-                        <label for="floatingInput">Nombre</label>
-                    </div>
+                            <div className="form-floating">
+                                <input
+                                    onChange={handleChange}
+                                    name="nombre"
+                                    value={input.name}
+                                    type="text"
+                                    className="form-control"
+                                    id="floatingInput"
+                                    placeholder="name@example.com"/>
+                                <label for="floatingInput">Nombre</label>
+                            </div>
 
-                    <div className="form-floating">
-                        <input
-                            onChange={handleChange}
-                            name="email"
-                            value={input.email}
-                            type="email"
-                            className="form-control"
-                            id="floatingInput"
-                            placeholder="name@example.com"/>
-                        <label for="floatingInput">Email address</label>
-                    </div>
-                    <div className="form-floating mb-3">
-                        <input
-                            onChange={handleChange}
-                            name="contraseña"
-                            value={input.contraseña}
-                            type="password"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="Password"/>
-                        <label for="floatingPassword">Password</label>
-                    </div>
+                            <div className="form-floating">
+                                <input
+                                    onChange={handleChange}
+                                    name="email"
+                                    value={input.email}
+                                    type="email"
+                                    className="form-control"
+                                    id="floatingInput"
+                                    placeholder="name@example.com"/>
+                                <label for="floatingInput">Email address</label>
+                            </div>
+                            <div className="form-floating mb-3">
+                                <input
+                                    onChange={handleChange}
+                                    name="contraseña"
+                                    value={input.contraseña}
+                                    type="password"
+                                    className="form-control"
+                                    id="floatingPassword"
+                                    placeholder="Password"/>
+                                <label for="floatingPassword">Password</label>
+                            </div>
 
-                    <button onClick={handleClick} className="w-100 btn btn-lg btn-primary" type="submit">Registrar</button>
-                    <p className="mt-5 mb-3 text-muted">&copy; 2022 Eafy Solutions</p>
-                </form>
-            </main>
-
+                            <button onClick={handleClick} className="w-100 btn btn-lg btn-primary" type="submit">Registrar</button>
+                            <p className="mt-5 mb-3 text-muted">&copy; 2022 Eafy Solutions</p>
+                        </form>
+                    </main>
+                </div>
+            </div>
         </div>
     );
 }
