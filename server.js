@@ -52,43 +52,39 @@ const Usuario = new mongoose.model("Usuario", usuarioSchema);
 var movimientosModel = new mongoose.model("MovimientosUsuario", movimientosUsuarioSchema);
 
 //Método post
-app.post("/login", async (req, res) => {
-    const {email, contraseña} = req.body
+app.post("/registrar", function (req, res){
+    // guardar variables
+    const usuarioFormulario = req.body.nombre;
+    const emailFormulario = req.body.email;
+    const contraseñaFormulario = req.body.contraseña;
+
+    // 3. Crear documento
+    const usuarioBaseDatos = new Usuario ({
+        nombre: usuarioFormulario,
+        email: emailFormulario,
+        contraseña: contraseñaFormulario,
+        reportesGenerados: 0
+    });
+
+    //4. subir a la base de datos o guardar.
+    usuarioBaseDatos.save();
+    res.status(200);
+});
+
+app.post("/Consulta", async (req, res) => {
+    const {nombre, email, contraseña} = req.body
     const user = await Usuario.findOne({email})
 
     if(!user){
-        res.status(404)
+        res.status(200)
         res.send({ error: 'Usuario no encontrado' })
         return 
+    }else{
+        res.status(201)
+        res.send({ error: 'Usuario encontrado' })
+        return 
     }
-
-    const checkPassword = await bcrypt.compare(contraseña, user.contraseña)
-
-    if (checkPassword){
-        
-        const accessToken = jwt.sign(
-            { "usuario": user.email }, 
-            process.env.ACCESS_TOKEN_SECRET, 
-            {expiresIn: '30s'}
-        );
-        const refreshToken = jwt.sign(
-            { "usuario": user.email }, 
-            process.env.REFRESH_TOKEN_SECRET, 
-            {expiresIn: '1d'}
-        );
-        res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: 24*60*60*1000});
-        res.status(200).json({ email, accessToken });
-        return
-    }
-
-    if(!checkPassword){
-        res.status(401)
-        res.send({
-            error: 'Contraseña Invalida'
-        })
-        return
-    }
-});
+})
 
 
 // Método para validar credenciales de Login
