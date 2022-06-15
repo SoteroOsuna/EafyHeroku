@@ -5,7 +5,7 @@ import AuthContext from "../AuthProvider";
 const Swal = require('sweetalert2');
 
 
-function Login( {setUserData} ){
+function Login( {setUserEmail, setUserContraseña} ){
     const { setAuth } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -34,7 +34,8 @@ function Login( {setUserData} ){
         const email = result?.data?.email;
         const accessToken = result?.data?.accessToken;
         setAuth({ email, accessToken });
-        setUserData(input);
+        setUserEmail(input.email);
+        setUserContraseña(input.contraseña);
         navigate('/dashboard');
         }
         catch(err){

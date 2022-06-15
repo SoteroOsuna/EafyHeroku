@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet';
+import Select from 'react-select';
 import swal from 'sweetalert';
 import Pdf from "react-to-pdf";
 
@@ -8,13 +9,38 @@ const reference2 = React.createRef();
 
 const Swal = require('sweetalert2');
 
-function DescargarPDF_ER(){
+function DescargarPDF_ER( {userEmail, userContraseña} ){
 
     //Estado ER
     const [cuentasER, setCuentasER] = useState({});
 
     var Mes_Rep1 = "ene";
     var Mes_Rep2 = "dic";
+
+    const meses = [
+        { label: 'Enero',       value: 'ene' },
+        { label: 'Febrero',     value: 'feb'},
+        { label: 'Marzo',       value: 'mar' },
+        { label: 'Abril',       value: 'abr' },
+        { label: 'Mayo',        value: 'may ' },
+        { label: 'Junio',       value: 'jun' },
+        { label: 'Julio',       value: 'jul' },
+        { label: 'Agosto',      value: 'ago' },
+        { label: 'Septiembre',  value: 'sep'},
+        { label: 'Octubre',     value: 'oct' },
+        { label: 'Noviembre',   value: 'nov'},
+        { label: 'Diciembre',   value: 'dic'}
+    ]
+
+    const handleSelect_Mes_Rep1 = (event) => {
+        Mes_Rep1 = event.value;
+        console.log(Mes_Rep1);
+    }
+
+    const handleSelect_Mes_Rep2 = (event) => {
+        Mes_Rep2 = event.value;
+        console.log(Mes_Rep2);
+    }
 
     const generarReporteER = () => {
         var ingresosTotal = [0, 0];
@@ -338,7 +364,23 @@ function DescargarPDF_ER(){
                 <div className="col-md-auto align-items-center text-center">
                     <h5>¿No es correcto? Pulsa "Actualizar Estado de Resultados"</h5>
                 </div>
-                    {/*generarReporteER()*/}
+                    {/* generarReporteER() */}
+                    <h4>Mes Inicial: </h4>
+                    <div className="col-md-auto">
+                        <Select name="mes1" required 
+                            options = {meses}
+                            onChange = {handleSelect_Mes_Rep1}
+                        />
+                            
+                    </div>
+                    <h4>Mes Final: </h4>
+                    <div className="col-md-auto">
+                        <Select name="mes2" required 
+                            options = {meses}
+                            onChange = {handleSelect_Mes_Rep2}
+                        />
+                            
+                    </div>
         
                     {/*Boton Estado de Resultados*/}
                     <div className="col-md-auto align-items-center text-center">

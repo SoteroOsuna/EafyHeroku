@@ -18,3 +18,4 @@ const nombre_Usuario = "Testing";
 var catalogo_Model = new mongoose.model(`excel_catalogo_${nombre_Usuario}`, catalogo_Schema, `excel_catalogo_${nombre_Usuario}`);
 
 module.exports = catalogo_Model;
+module.exports = catalogo_Schema;
