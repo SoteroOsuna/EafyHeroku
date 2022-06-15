@@ -27,3 +27,4 @@ const nombre_Usuario = "Testing";
 var mov_Model = new mongoose.model(`excel_mov_Aux_${nombre_Usuario}`, movimientos_Schema, `excel_mov_Aux_${nombre_Usuario}`);
 
 module.exports = mov_Model;
+module.exports = movimientos_Schema;

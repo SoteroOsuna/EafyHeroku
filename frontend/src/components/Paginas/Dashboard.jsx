@@ -16,7 +16,7 @@ const reference3 = React.createRef();
 
 const Swal = require('sweetalert2');
 
-function Dashboard(){
+function Dashboard({userEmail, userContraseña}){
 
     const [reportGenerated, setReportGenerated] = useState(false);
     const [cuentasBG, setCuentasBG] = useState({});
@@ -149,10 +149,11 @@ function Dashboard(){
     }
 
     const generarReporteBG = () => {
+        console.log(userEmail, " : ", userContraseña);
         console.log(Mes_Rep1);
         console.log(Mes_Rep2);
 
-        axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}`).then(resp => {
+        axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}/${userEmail}/${userContraseña}`).then(resp => {
             const datos = resp.data;
             console.log(datos); 
             if (datos.length == 0) {
@@ -1091,7 +1092,7 @@ function Dashboard(){
             swal("Ingresa un archivo Excel(.xlsx)")
         }
     }
-     
+    /* 
     async function validateMov(){
         const result = await axios.get("/validateMovimientosTEST");
         const status = result.status
@@ -1113,6 +1114,7 @@ function Dashboard(){
             })
         }
     }
+    */
 
     function handleClick(event){
         // evita el parpadeo predefinido
@@ -1121,7 +1123,7 @@ function Dashboard(){
         console.log(excelMov);
         
         console.log("Pase por handleClick");
-        validateMov()
+        //validateMov()
     }
 
     let formData = new FormData();
@@ -1133,21 +1135,24 @@ function Dashboard(){
         if (e.target && e.target.files[0]);
         formData.append('excel', e.target.files[0]);
         mostrarAlerta();
-        prev_result = await axios.get("/validateMovimientosTEST");
-        console.log(prev_result);
-        prev_result = prev_result.data.submit_id;
-        console.log("Prev Result: ", prev_result);
+        //prev_result = await axios.get("/validateMovimientosTEST");
+        //console.log(prev_result);
+       // prev_result = prev_result.data.submit_id;
+        //console.log("Prev Result: ", prev_result);
         //console.log({formData})
     } 
 
+    /*
     const clickFunc = (event) => {
         setTimeout(validate_Mov, 3000);
     }
+    */
 
+    /*
     const validate_Mov = async (event) => {
-        result = await axios.get("/validateMovimientosTEST");
-        console.log(result);
-        result = result.data.submit_id;
+        //result = await axios.get("/validateMovimientosTEST");
+        //console.log(result);
+        //result = result.data.submit_id;
         console.log("Result: ", result);
 
         if (prev_result + 1 === result){
@@ -1166,6 +1171,7 @@ function Dashboard(){
         }
         
     }
+    */
 
     const meses = [
         { label: 'Enero',       value: 'ene' },
@@ -1255,7 +1261,7 @@ function Dashboard(){
                             <div className="row justify-content-center">
                             */}
                                 <div className="col-md-auto">
-                                     <form action="/subirMovimientos" method="POST" enctype="multipart/form-data"> 
+                                     <form action={`/subirMovimientos/${userEmail}/${userContraseña}`} method="POST" enctype="multipart/form-data"> 
                                     
                                         <div className="form-group">
                                             <label for="excel">Movimientos Auxiliares del Catálogo</label>
@@ -1269,8 +1275,8 @@ function Dashboard(){
                                             </div>
                                         </div>
                                     </form>
-
-                                    <form action="/subirCatalogo" method="POST" encType="multipart/form-data">
+                                    
+                                    <form action={`/subirCatalogo/${userEmail}/${userContraseña}`} method="POST" encType="multipart/form-data">
                                         <div className="form-group">
                                             <label for="excel">Catálogo de Cuentas</label>
                                             <input type="file" className="form-control" name="excel" onChange={onFileChange} required></input>
