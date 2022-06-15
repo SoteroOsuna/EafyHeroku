@@ -27,8 +27,8 @@ function Dashboard({userData}){
     //Estado BC
     const [cuentasBC, setCuentasBC] = useState({});
 
-    var Mes_Rep1 = "";
-    var Mes_Rep2 = "";
+    var Mes_Rep1 = "ene";
+    var Mes_Rep2 = "dic";
 
     var cuentas = {};
     var limitesBG = {
@@ -1212,6 +1212,10 @@ function Dashboard({userData}){
         
     }
 
+    const openInNewTab = url => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      };
+
     return(
         <div className="container micontenedor">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -1291,19 +1295,12 @@ function Dashboard({userData}){
                                 </Pdf>
                             </div>
                             */}
-
-                            <div className="modal-footer">
-                                <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General"</button>
-                            </div>
-
-                            <div className="modal-footer">
-                                <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 2"</button>
-                            </div>
-
-                            <div className="modal-footer">
-                                <button className="btn btn-primary" onClick={generatePDF}>Descargar PDF "Balance General 3"</button>
-                            </div>
                             
+                            {/*
+                            <button onClick={() => openInNewTab('/descargarPDF')}>
+                                NewTab
+                            </button>
+                            */}
 
                         
                             <div id="result" className="titulo-seccion" hidden >
@@ -1512,6 +1509,20 @@ function Dashboard({userData}){
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="modal-footer">
+                                <button className="btn btn-light" onClick={() => openInNewTab('/descargarPDF_BG')}>Descarga tu PDF "Balance General"</button>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button className="btn btn-light" onClick={() => openInNewTab('/descargarPDF_ER')}>Descarga tu PDF "Estado de Resultados"</button>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button className="btn btn-light" onClick={() => openInNewTab('/descargarPDF_BC')}>Descarga tu PDF "Balance de Comprobación"</button>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
