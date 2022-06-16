@@ -10,44 +10,9 @@ import PDF_BalanceG from "./Paginas/PDF_BalanceG";
 import PDF_EstadoR from "./Paginas/PDF_EstadoR";
 import PDF_BalanceDeC from "./Paginas/PDF_BalanceDeC";
 import RequireAuth from "./RequireAuth";
+//import { set } from "../../../backend/models/catalogo_Schema";
 
-function Direccionamiento(){
-
-    const [userEmail, setUserEmail] = useState("");
-    const [userContraseña, setUserContraseña] = useState("");
-
-    
-    useEffect(() => {
-        console.log("BUSCANDO DATOS");
-        if (window.localStorage.getItem("userEmail")) {
-            console.log("VALOR ENCONTRADO EMAIL");
-            const emailData = window.localStorage.getItem("userEmail");
-            console.log(emailData);
-            setUserEmail(JSON.parse(emailData));
-        }
-        if (window.localStorage.getItem("userContraseña")) {
-            console.log("VALOR ENCONTRADO CONTRASEÑA");
-            const contraseñaData = window.localStorage.getItem("userContraseña");
-            console.log(contraseñaData);
-            setUserContraseña(JSON.parse(contraseñaData));
-        }
-    }, []);
-    
-    useEffect(() => {
-        console.log("imprimiendo info de usuario", userEmail," : ", userContraseña);
-        if (userEmail && userContraseña) {
-            window.localStorage.setItem('userEmail', JSON.stringify(userEmail));
-            window.localStorage.setItem('userContraseña', JSON.stringify(userContraseña));
-        } else {
-            const emailData = window.localStorage.getItem("userEmail");
-            console.log(emailData);
-            setUserEmail(JSON.parse(emailData));
-
-            const contraseñaData = window.localStorage.getItem("userContraseña");
-            console.log(contraseñaData);
-            setUserContraseña(JSON.parse(contraseñaData));
-        }
-    }, [userEmail, userContraseña]);
+function Direccionamiento({loggedIn, setLoggedIn, userEmail, setUserEmail, userContraseña, setUserContraseña}){
 
     return (
         <Routes>
@@ -58,8 +23,8 @@ function Direccionamiento(){
                                                                     userContraseña={userContraseña}/>} />
             <Route path="/descargarPDF_BC" element={<PDF_BalanceDeC userEmail={userEmail} 
                                                                     userContraseña={userContraseña}/>} />
-            <Route path="/login" element={<Login setUserEmail={setUserEmail} setUserContraseña={setUserContraseña} />} />
-            <Route path="/registro" element={<Registro />} />
+            <Route class={loggedIn? 'hidden' : undefined} path="/login" element={<Login setUserEmail={setUserEmail} setUserContraseña={setUserContraseña} setLoggedIn={setLoggedIn}/>} />
+            <Route class={loggedIn? 'hidden' : undefined} path="/registro" element={<Registro setUserEmail={setUserEmail} setUserContraseña={setUserContraseña} />} />
             <Route path="/dashboard" element={<Dashboard userEmail={userEmail} userContraseña={userContraseña} />} />
             {/*
             <Route element={<RequireAuth />}>

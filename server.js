@@ -166,12 +166,12 @@ async function uploadMovimientos(req, res) {
     })
 
     for (let line of data) {
-        if (Object.keys(line).length >= 4 && ( (line["CONTPAQ i"] !== undefined && line["_EMPTY"] !== "") || String(line["_EMPTY_2"]).includes("Total") ) ) {
+        if (Object.keys(line).length >= 4 && ( (line["CONTPAQ i"] !== undefined && line["__EMPTY"] !== "") || String(line["__EMPTY_2"]).includes("Total") ) ) {
             if (String(line["CONTPAQ i"]).match(/\d{3}-\d{3}/)) {
                 account = line["CONTPAQ i"];
                 EmptyRow4 = line["__EMPTY_4"];
             } else {
-                if (line["Lecar Consultoria en TI, S.C."] == undefined  && (line["_EMPTY_3"], line["_EMPTY_4"], line["Hoja:      1"] != 0)) {
+                if (line["Lecar Consultoria en TI, S.C."] == undefined  && (line["__EMPTY_3"], line["__EMPTY_4"], line["Hoja:      1"] != 0)) {
                     var VCUENTA = account;
                     cadena = String(line["__EMPTY_2"]);
 
@@ -337,12 +337,12 @@ async function uploadMovimientos(req, res) {
     })
 
     for (let line of data) {
-        if (Object.keys(line).length >= 4 && ( (line["CONTPAQ i"] !== undefined && line["_EMPTY"] !== "") || String(line["_EMPTY_2"]).includes("Total") ) ) {
+        if (Object.keys(line).length >= 4 && ( (line["CONTPAQ i"] !== undefined && line["__EMPTY"] !== "") || String(line["__EMPTY_2"]).includes("Total") ) ) {
             if (String(line["CONTPAQ i"]).match(/\d{3}-\d{3}/)) {
                 account = line["CONTPAQ i"];
                 EmptyRow4 = line["__EMPTY_4"];
             } else {
-                if (line["Lecar Consultoria en TI, S.C."] == undefined  && (line["_EMPTY_3"], line["_EMPTY_4"], line["Hoja:      1"] != 0)) {
+                if (line["Lecar Consultoria en TI, S.C."] == undefined  && (line["__EMPTY_3"], line["__EMPTY_4"], line["Hoja:      1"] != 0)) {
                     var VCUENTA = account;
                     cadena = String(line["__EMPTY_2"]);
 
@@ -630,7 +630,7 @@ async function uploadCatalogo(req, res) {
                 moment.locale('es')
                 var VFECHA_SUBIDA = moment(now).format('LL, h:mm a');
                 
-                var CatalogoBaseDatos = new catalogo_Model ({
+                var CatalogoBaseDatos = new catalogoA_Model ({
                     Submission_id: submit_id,
                     Nivel: VNIVEL,
                     Codigo: VCODIGO,
@@ -760,7 +760,7 @@ app.get("/recibir_FechasDe_Movimientos/:id/:id2", (req, res) => {
     
     console.log("dQuery: ", dQuery);
 
-    mov_Model.find( dQuery ).then( (result) => {
+    movA_Model.find( dQuery ).then( (result) => {
         res.send(result);
     }).catch( (err) => {
         console.log(err);
@@ -844,7 +844,7 @@ app.get("/recibirCuentas/:usr/:pwd", (req, res) => {
     var usr = req.params.usr;
     var pwd = req.params.pwd;
     console.log(usr, pwd);
-    var catalogoA_Model = new mongoose.model(`excel_catalogo_${usr.concat(pwd)}`, catalogo_Schema, `excel_catalogo_${usr.concat(pwd)}`);
+    var catalogoA_Model = new mongoose.model(`excel_catalogo_${usr}`, catalogo_Schema, `excel_catalogo_${usr}`);
     catalogoA_Model.find().then ( (result) => {
         res.send(result);
     }).catch( (err) => {
@@ -865,7 +865,7 @@ if(process.env.NODE_ENV === 'production') {
     // cambio de puerto en heroku
     let port = process.env.PORT;
     if (port == null || port == "") {
-    port = 5000;
+    port = 3001;
     }
 ////////// 2 fragmentos necesarios para implementar heroku
 

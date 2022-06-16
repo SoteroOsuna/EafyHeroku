@@ -62,8 +62,8 @@ function DescargarPDF_BC( {userEmail, userContraseña} ){
         var subs = {}
 
         axios.all([
-            axios.get('/recibirCuentas'), 
-            axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}`)
+            axios.get(`/recibirCuentas/${userEmail}/${userContraseña}`), 
+            axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}/${userEmail}/${userContraseña}`)
           ])
           .then(axios.spread((resp1, resp2) => {
             var catalogoCuentas = resp1.data;
@@ -130,7 +130,12 @@ function DescargarPDF_BC( {userEmail, userContraseña} ){
                         sInicial = movimientos[i]["Total_Saldo"] + movimientos[i]["Total_Abonos"] - movimientos[i]["Total_Cargos"];
                     }
                     if(movimientos[i]["Categoria_Total"] == "Movimiento de Cuenta Común") {
-                        setCuentasBC(cuentasBC[movimientos[i]["Cuenta"]] = [sInicial, movimientos[i]["Total_Cargos"], movimientos[i]["Total_Abonos"], movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasBC[movimientos[i]["Cuenta"]];
+                        currObj[0] += sInicial;
+                        currObj[1] += movimientos[i]["Total_Cargos"];
+                        currObj[2] += movimientos[i]["Total_Abonos"];
+                        currObj[3] += movimientos[i]["Total_Saldo"];
+                        setCuentasBC(cuentasBC[movimientos[i]["Cuenta"]] = currObj);
                     } else {
                         var codigo = "";
                         if (movimientos[i]["Cuenta"] != diccionarioCN[movimientos[i]["Categoria_Total"]] && diccionarioCN[movimientos[i]["Categoria_Total"]] != null) {
@@ -142,7 +147,12 @@ function DescargarPDF_BC( {userEmail, userContraseña} ){
                         } else {
                             codigo = movimientos[i]["Cuenta"];
                         }
-                        setCuentasBC(cuentasBC[codigo] = [sInicial, movimientos[i]["Total_Cargos"], movimientos[i]["Total_Abonos"], movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasBC[movimientos[i]["Cuenta"]];
+                        currObj[0] += sInicial;
+                        currObj[1] += movimientos[i]["Total_Cargos"];
+                        currObj[2] += movimientos[i]["Total_Abonos"];
+                        currObj[3] += movimientos[i]["Total_Saldo"];
+                        setCuentasBC(cuentasBC[codigo] = currObj);
                         
                     }
                 }
@@ -431,6 +441,7 @@ function DescargarPDF_BC( {userEmail, userContraseña} ){
                 }
             }
             orden.push("000-0500");
+            categoriasGrandes["000-0500"].sort();
             for (let i = 0; i < categoriasGrandes["000-0500"].length; i++) {
                 orden.push(categoriasGrandes["000-0500"][i]);
                 subs[categoriasGrandes["000-0500"][i]].sort();

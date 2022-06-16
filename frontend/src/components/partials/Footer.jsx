@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function Footer() {
+function Footer({loggedIn, setLoggedIn}) {
     return (
         <footer >
 
@@ -19,6 +19,11 @@ function Footer() {
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="dashboard-tab" data-toggle="tab" href="/dashboard" role="tab" aria-controls="dashboard" aria-selected="false">Dashboard</a>
+                        </li>
+                        <li>
+                            <button className={loggedIn? 'hidden' : undefined} onClick={() => setLoggedIn(false)}>
+                                Log Out
+                            </button>
                         </li>
                     </ul>
                     <p class="text-center text-muted">&copy; 2022 Eafy Solutions</p>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
-function Header() {
+function Header({loggedIn, setLoggedIn, logOut}) {
     return (
         <header>
             {/*
@@ -38,11 +38,9 @@ function Header() {
                             <a href="/login" class="nav-item nav-link">Login</a>
                             <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
                         </div>
-                        {/*
-                        <div class="navbar-nav ms-auto">
-                            <a href="/" class="nav-item nav-link">Logout</a>
-                        </div>
-                        */}
+                        <button className={!loggedIn? 'hidden' : undefined} onClick={() => logOut()}>
+                            Log Out
+                        </button>
                     </div>
 
                 </div>

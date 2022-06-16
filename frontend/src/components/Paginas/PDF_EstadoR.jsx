@@ -51,17 +51,23 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
         var asignacion = {};
         var diccionarioCN = {};
 
+        console.log("ruta: ", `/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}/${userEmail}/${userContraseña}`);
+
         axios.all([
-            axios.get('/recibirCuentas'), 
-            axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}`)
+            axios.get(`/recibirCuentas/${userEmail}/${userContraseña}`), 
+            axios.get(`/recibir_FechasDe_Movimientos/${Mes_Rep1}/${Mes_Rep2}/${userEmail}/${userContraseña}`)
         ])
         .then(axios.spread((resp1, resp2) => {
             var catalogoCuentas = resp1.data;
             var movimientos = resp2.data;
             var pendientes = [];
-
+            
+            console.log("Comenzamos");
+            console.log(catalogoCuentas);
+            console.log(movimientos);
             //Revisar el catálogo y ver cuentas que estarán en el reporte ER
             for (let i = 0; i < catalogoCuentas.length; i++) {
+                setCuentasER(cuentasER[catalogoCuentas[i]["Codigo"]] = [0, 0]);
                 if (parseInt(catalogoCuentas[i]["Codigo"].substring(0,3)) >= 400 && parseInt(catalogoCuentas[i]["Codigo"].substring(0,3)) < 500) {
                     ingresos.push(catalogoCuentas[i]["Codigo"]);
                     diccionarioCN[catalogoCuentas[i]["Codigo"]] = catalogoCuentas[i]["Nombre"];
@@ -91,6 +97,9 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
                     diccionarioCN[catalogoCuentas[i]["Nombre"]] = catalogoCuentas[i]["Codigo"];
                 }
             }
+            console.log("A ver las cuentas");
+            console.log(pendientes);
+            console.log(cuentasER);
 
             //Analizar movimientos para conseguir los totales de las subcategorías 
             for (let i = 0; i < movimientos.length; i++) {
@@ -110,10 +119,15 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
 
                     console.log("Codigo decidido:", codigo);
                     if (movimientos[i]["Total_Cargos"] > 0 && movimientos[i]["Total_Abonos"] == 0) {
-                        setCuentasER(cuentasER[codigo] = [movimientos[i]["Total_Cargos"], movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasER[codigo];
+                        currObj[0] += movimientos[i]["Total_Cargos"];
+                        currObj[1] += movimientos[i]["Total_Saldo"];
+                        setCuentasER(cuentasER[codigo] = currObj);
                     } else{
-                        // if (movimientos[i]["Total_Abonos"] > 0 && movimientos[i]["Total_Cargos"] == 0) 
-                        setCuentasER(cuentasER[codigo] = [movimientos[i]["Total_Abonos"],movimientos[i]["Total_Saldo"]]);
+                        var currObj = cuentasER[codigo];
+                        currObj[0] += movimientos[i]["Total_Abonos"];
+                        currObj[1] += movimientos[i]["Total_Saldo"];
+                        setCuentasER(cuentasER[codigo] = currObj);
                     }
                 }
             }
@@ -124,11 +138,15 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
                     ingresosTotal[1] += cuentasER[ingresos[i]][1];
                 }
             }
+            console.log("Calculando total de ingresos");
             //Calcular el total de cada categoría de egresos
             for (let i = 0; i<egresos.length; i++) {
                 var currTotal = [0,0];
-                if (cuentasER[egresos[i]] == null) {
+                console.log("Vamos con la categoria: ", diccionarioCN[egresos[i]]);
+                console.log(cuentasER[egresos[i]]);
+                if (cuentasER[egresos[i]][0] == 0 && cuentasER[egresos[i]][1] == 0) {
                     for (let j = 0; j<egresosSub[egresos[i]].length; j++) {
+                        console.log("Vamos con la subcategoria: ", diccionarioCN[egresosSub[egresos[i]]]);
                         if(cuentasER[egresosSub[egresos[i]][j]] != null) {
                             currTotal[0] += cuentasER[egresosSub[egresos[i]][j]][0];
                             currTotal[1] += cuentasER[egresosSub[egresos[i]][j]][1];
@@ -143,6 +161,12 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
                 }
             }
             console.log(diccionarioCN);
+            console.log(ingresos);
+            console.log(egresos);
+            console.log(egresosSub);
+            console.log(ingresosTotal);
+            console.log(egresosTotal);
+            console.log(cuentasER);
             //Añadir contenido HTML a la página: 
 
             //Añadir titulo de ingresos: 
@@ -155,7 +179,7 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
 
             //Agregar subcategorías de ingresos:
             for (let i = 0; i < ingresos.length; i++) {
-                if (cuentasER[ingresos[i]] != null) {
+                if (cuentasER[ingresos[i]] != null && (cuentasER[ingresos[i]][0] != 0 || cuentasER[ingresos[i]][1] != 0)) {
                     var Irow = ERTable.insertRow(ERTable.rows.length);
                     var ICell0 = Irow.insertCell(0);
                     var Ielement = document.createElement("p");
@@ -221,7 +245,7 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
             //Agregar cada categoria de egresos
             egresos.sort();
             for (let i = 0; i < egresos.length; i++) {
-                if (cuentasER[egresos[i]] != null && (cuentasER[egresos[i]][0] != 0 || cuentasER[egresos[i]][1] != 0)) {
+                if (cuentasER[egresos[i]]  && (cuentasER[egresos[i]][0] != 0 || cuentasER[egresos[i]][0] != 0)) {
                     //Agregar título de categoría
                     var Erow = ERTable.insertRow(ERTable.rows.length);
                     var Ecell0 = Erow.insertCell(0);
@@ -232,7 +256,7 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
                     //Agregar cada subcategoría
                     egresosSub[egresos[i]].sort();
                     for (let j = 0; j<egresosSub[egresos[i]].length;j++) {
-                        if (cuentasER[egresosSub[egresos[i]][j]] != null) {
+                        if (cuentasER[egresosSub[egresos[i]][j]] != null && (cuentasER[egresosSub[egresos[i]][j]][0] != 0 || cuentasER[egresosSub[egresos[i]][j]][1] != 0)) {
                             var SErow = ERTable.insertRow(ERTable.rows.length);
 
                             var SEcell0 = SErow.insertCell(0);
@@ -347,7 +371,7 @@ function DescargarPDF_ER( {userEmail, userContraseña} ){
         }));
 
 
-    };   
+    }; 
 
     const options = {
         orientation: 'portrait',

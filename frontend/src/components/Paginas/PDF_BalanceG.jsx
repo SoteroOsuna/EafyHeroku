@@ -300,7 +300,7 @@ function DescargarPDF_BG( {userEmail, userContraseña} ){
             
             setReportGenerated(current => !current);
         });
-    };  
+    };
 
     const options = {
         orientation: 'portrait',
