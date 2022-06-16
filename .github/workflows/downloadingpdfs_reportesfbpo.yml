@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'reportesfbpo'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_58747314EA2647099A659CC9F1A48044 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2596E75D1CA343BBA5A5E2E07F7C0EDE }}
           package: .
